@@ -3,33 +3,34 @@
 #include <vector>
 #include <unordered_map>
 #include <list>
+#include <algorithm>
 
 // Переводит слово в номер по заданной таблице соответствия
 std::string Word2Number( std::string const& word );
 
-std::list< size_t > find_min( size_t pos, size_t end_pos, std::unordered_map< size_t, std::list< size_t > > const& map, std::vector< std::string > const& words )
+std::list< size_t > find_min( size_t pos, size_t end_pos, std::unordered_map< size_t, std::list< std::pair< size_t, size_t > > > const& map, std::vector< std::string > const& words )
 {
    std::list< size_t > result;
 
    auto it = map.find( pos );
    if( it != map.end() )
    {
-      for( size_t i : it->second )
+      for( std::pair< size_t, size_t > const& p : it->second )
       {
-         std::string const& word = words[i];
-         if( pos + word.size() == end_pos )
+         std::string const& word = words[p.first];
+         if( pos + p.second == end_pos )
          {
             result.clear();
-            result.push_back( i );
+            result.push_back( p.first );
             break;
          }
          else
          {
-            auto res = find_min( pos + word.size(), end_pos, map, words );
+            auto res = find_min( pos + p.second, end_pos, map, words );
             if( res.size() != 0 && ( result.size() == 0 || result.size()-1 > res.size() ) )
             {
                result.clear();
-               result.push_back( i );
+               result.push_back( p.first );
                result.splice( result.end(), res );
             }
          }
@@ -57,7 +58,7 @@ int main()
       std::vector< std::string > words;
       words.resize( cnt );
 
-      std::unordered_map< size_t, std::list< size_t > > map;
+      std::unordered_map< size_t, std::list< std::pair< size_t, size_t > > > map;
 
       for( size_t i = 0; i < cnt; ++i )
       {
@@ -70,7 +71,11 @@ int main()
          while( pos != std::string::npos )
          {
             //std::cout << pos << ",";
-            map[ pos ].push_back( i );
+            std::list< std::pair< size_t, size_t > >& l = map[ pos ];
+            if( std::find_if( l.begin(), l.end(), [&word_number]( std::pair< size_t, size_t > const& p ) -> bool { return p.second == word_number.size(); }) == l.end() )
+            {
+               l.push_back( std::make_pair( i, word_number.size() ) );
+            }
 
             pos = number.find( word_number, pos + word_number.size() );
          }
