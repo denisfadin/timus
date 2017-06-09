@@ -4,14 +4,14 @@
 #include <iomanip>
 #include <cmath>
 
-typedef std::pair< float, float > Point;
+typedef std::pair< double, double > Point;
 
-float lenght( Point const& a, Point const& b )
+double lenght( Point const& a, Point const& b )
 {
    return sqrt((a.first - b.first)*(a.first - b.first) + (a.second - b.second)*(a.second - b.second));
 }
 
-float time( Point const& a, Point const& b, float const& speed )
+double time( Point const& a, Point const& b, double const& speed )
 {
    return lenght( a, b ) / speed;
 }
@@ -26,7 +26,7 @@ struct hash
 
 int main()
 {
-   float foot_speed, metro_speed;
+   double foot_speed, metro_speed;
    std::cin >> foot_speed >> metro_speed;
 
    int N;
@@ -35,16 +35,18 @@ int main()
    std::vector< Point > stations;
    for( int i = 0; i < N; ++i )
    {
-      float x, y;
+      double x, y;
       std::cin >> x >> y;
       stations.emplace_back( std::make_pair( std::move( x ), std::move( y ) ) );
    }
 
    std::unordered_set< std::pair<int,int>, hash > graph;
    {
-      int x = -1, y = -1;
-      while( 0 != x || 0 != y )
+      int x, y;
+      while( true )
       {
+         if( 0 == x && 0 == y )
+            break;
          std::cin >> x >> y;
          graph.emplace( std::make_pair( x-1, y-1 ) );
          graph.emplace( std::make_pair( y-1, x-1 ) );
@@ -58,7 +60,7 @@ int main()
    std::cin >> b.first >> b.second;
    stations.emplace_back( b );
 
-   std::vector< float > a_time;
+   std::vector< double > a_time;
    std::vector< std::vector< int > > a_metro;
    std::vector< bool > marked;
    for( int i = 0; i <= N; ++i )
@@ -72,10 +74,10 @@ int main()
       a_metro.emplace_back( std::move(v) );
    }
 
-   float const MAX_TIME = a_time.back();
+   double const MAX_TIME = a_time.back();
 
    auto find_next = [&]( int& num ) -> bool {
-      float min = MAX_TIME;
+      double min = MAX_TIME;
       num = -1;
       for( int i = 0; i <= N; ++i )
       {
@@ -97,7 +99,7 @@ int main()
          if( num == i )
             continue;
 
-         float t;
+         double t;
          bool metro = false;
          auto it = graph.find( std::make_pair( num, i ) );
          if( it != graph.end() ) // едем на метро
@@ -120,7 +122,7 @@ int main()
       }
    }
 
-   std::cout << std::setprecision(8) << a_time[N] << std::endl;
+   std::cout << std::fixed << std::setprecision(7) << a_time[N] << std::endl;
    std::cout << a_metro[N].size() << " ";
    for( auto it = a_metro[N].begin(); it != a_metro[N].end(); ++it )
       std::cout << *it << " ";
