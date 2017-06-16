@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 
 long NOD( long a, long b )
 {
@@ -48,6 +49,9 @@ int main()
    std::vector< long > tree;
    tree.resize( nMax << 1, 0 );
 
+   std::unordered_multimap< long, long > map;
+   map.reserve( q );
+
    long curr_i = 0;
    for( long i = 0; i < q; ++i )
    {
@@ -60,25 +64,23 @@ int main()
       {
          pos = nMax + curr_i++;
          tree[pos] = a;
+         map.insert( std::make_pair( a, pos ) );
       }
       else
       {
-         pos = nMax;
-         while( true )
-         {
-            if( tree[pos] == a )
-            {
-               tree[pos] = 0;
-               break;
-            }
-            pos++;
-         }
+         auto it = map.find( a );
+         pos = it->second;
+         map.erase( it );
+         tree[pos]=0;
       }
 
       while( pos > 1 )
       {
          pos >>= 1;
-         tree[pos]= NOD( tree[pos<<1], tree[(pos<<1)+1] );
+         long nod = NOD( tree[pos<<1], tree[(pos<<1)+1] );
+         if( tree[pos] == nod )
+            break;
+         tree[pos] = nod;
       }
 
       std::cout << ( ( tree[1] > 0 ) ? tree[1] : 1 ) << std::endl;
