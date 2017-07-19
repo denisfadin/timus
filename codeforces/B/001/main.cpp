@@ -22,10 +22,12 @@ int main()
          int32_t y = atoi( s.c_str() + c_pos + 1 );
 
          std::string buf;
+
          while( y )
          {
+            y -= 1;
             auto mod = y % 26;
-            buf.push_back( 'A' - 1 + mod );
+            buf.push_back( 'A' + mod );
             y -= mod;
             y /= 26;
          }
