@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdint>
 #include <string>
+#include <stdio.h>
 
 int main()
 {
@@ -16,7 +17,20 @@ int main()
       if( s.at( 0 ) == 'R' && s.at( 1 ) >= '1' && s.at( 1 ) <= '9' && s.find( 'C' ) != std::string::npos )
       {
          // R1C1
-         //std::cout << "RXCY" << std::endl;
+
+         size_t c_pos = s.find( 'C' );
+         int32_t y = atoi( s.c_str() + c_pos + 1 );
+
+         std::string buf;
+         while( y )
+         {
+            auto mod = y % 26;
+            buf.push_back( 'A' - 1 + mod );
+            y -= mod;
+            y /= 26;
+         }
+
+         std::cout << std::string( buf.rbegin(), buf.rend() ) << std::string( s.begin() + 1, s.begin() + c_pos ) << std::endl;
       }
       else
       {
