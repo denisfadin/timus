@@ -2,24 +2,33 @@
 #include <stdint.h>
 #include <vector>
 
-template< typename T >
 class Matrix
 {
    public:
 
-      Matrix( int16_t n_, int16_t m_, T const& val )
-         : n( n_ ), m( m_ ), buf( n * m, val )
+      Matrix( int16_t n_, int16_t m_ )
+         : n( n_ ), m( m_ ), buf( n * m, false )
       {
       }
 
-      T get( int16_t i, int16_t j ) const
+      int16_t getN() const
+      {
+         return n;
+      }
+
+      int16_t getM() const
+      {
+         return m;
+      }
+
+      bool get( int16_t i, int16_t j ) const
       {
          if( i >= n || j >= m )
-            return T( 0 );
+            return false;
          return buf[ i*m + j ];
       }
 
-      void set( T const& val, int16_t i, int16_t j )
+      void set( bool val, int16_t i, int16_t j )
       {
          buf[ i*m + j ] = val;
       }
@@ -28,7 +37,47 @@ class Matrix
 
       int16_t n;
       int16_t m;
-      std::vector< T > buf;
+      std::vector< bool > buf;
+};
+
+// Работа с прямоугольниками на матрице
+class Rectangles
+{
+public:
+
+   Rectangles( Matrix const& matrix )
+      : n( matrix.getN() ),
+        m( matrix.getM() ),
+        buf( n * m, 0 )
+   {
+      for( int16_t i = 0; i < n; ++i )
+         for( int16_t j = 0; j < m; ++j )
+         {
+            buf[ i*m + j ] = getSum( i-1, j ) + getSum( i, j-1 ) - getSum( i-1, j-1 ) + ( matrix.get( i, j ) ? 1 : 0 );
+         }
+   }
+
+   // Получить сумму единиц на прямоугольнике (0,0) - (i,j)
+   int32_t getSum( int16_t i, int16_t j ) const
+   {
+      if( i < 0 || j < 0 )
+         return 0;
+      i = std::min( i, (int16_t)(n-1) );
+      j = std::min( j, (int16_t)(m-1) );
+      return buf[ i*m + j ];
+   }
+
+   // Получить сумму единиц на прямоугольнике (xi,xj) - (yi,yj)
+   int32_t getSum( int16_t xi, int16_t xj, int16_t yi, int16_t yj ) const
+   {
+      return getSum( yi, yj ) - getSum( xi-1, yj ) - getSum( yi, xj-1 ) + getSum( xi-1, xj-1 );
+   }
+
+private:
+
+   int16_t n;
+   int16_t m;
+   std::vector< int32_t > buf;
 };
 
 // Формирует массив простых чисел не больших n
@@ -53,7 +102,7 @@ int main()
    int16_t n, m;
    std::cin >> n >> m;
 
-   Matrix< bool > matrix( n, m, false );
+   Matrix matrix( n, m );
 
    std::string s;
    s.reserve( m );
@@ -64,40 +113,21 @@ int main()
          matrix.set( s[j] == '1', i, j );
    }
 
-   /*for( int16_t i = 0; i < std::max( n, m ); ++i )
-   {
-      for( int16_t j = 0; j < std::max( n, m ); ++j )
-      {
-         std::cout << matrix.get( i, j ) ? '1' : '0';
-      }
-      std::cout << std::endl;
-   }*/
+   Rectangles rects( matrix );
 
    int32_t result = n * m;
 
    std::vector< int16_t > pnums = GetPrimeNumbers( std::max( n, m ) );
    for( auto const& num : pnums )
    {
-      //std::cout << "num: " << num << std::endl;
-
       int32_t res = 0;
 
       for( int16_t i = 0; i < n; i += num )
-      {
          for( int16_t j = 0; j < m; j += num )
          {
-            int32_t cnt1 = 0;
-            for( int16_t ii = 0; ii < num; ++ii )
-               for( int16_t jj = 0; jj < num; ++jj )
-               {
-                  if( matrix.get( i+ii, j+jj ) )
-                     ++cnt1;
-               }
-            res += std::min( cnt1, num*num - cnt1 );
+            int32_t cnt = rects.getSum( i, j, i+num-1, j+num-1 );
+            res += std::min( cnt, num*num - cnt );
          }
-      }
-
-      //std::cout << "num res: " << res << std::endl;
 
       result = std::min( result, res );
    }
