@@ -64,6 +64,11 @@ int main()
       }
       else if( operation == "removeMin" )
       {
+         if( heap.empty() )
+         {
+            heap.push_back( 0 );
+            result.push_back( std::make_pair( "insert", 0 ) );
+         }
          std::pop_heap( std::begin( heap ), std::end( heap ), comp );
          heap.pop_back();
          result.push_back( std::make_pair( "removeMin", 0 ) );
