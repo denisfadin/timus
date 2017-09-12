@@ -1,88 +1,160 @@
-#include <iostream>
+#include <stdio.h>
 #include <stdint.h>
 #include <vector>
-#include <string>
 #include <algorithm>
+
+class Result
+{
+   enum class OperationType
+   {
+      Insert,
+      GetMin,
+      RemoveMin
+   };
+
+   using Record = std::pair< OperationType, int32_t >;
+
+   void Log( OperationType op_type, int32_t x )
+   {
+      log.emplace_back( std::make_pair( op_type, x ) );
+   }
+
+public:
+
+   Result( )
+   {
+      log.reserve( 1000000 );
+   }
+
+   void LogInsert( int32_t x )
+   {
+      Log( OperationType::Insert, x );
+   }
+
+   void LogGetMin( int32_t x )
+   {
+      Log( OperationType::GetMin, x );
+   }
+
+   void LogRemoveMin()
+   {
+      Log( OperationType::RemoveMin, 0 );
+   }
+
+   void Write() const
+   {
+      printf( "%ld\n", log.size() );
+
+      for( auto const& record : log )
+      {
+         switch( record.first )
+         {
+            case OperationType::Insert:
+               printf( "insert %ld\n", record.second );
+               break;
+            case OperationType::GetMin:
+               printf( "getMin %ld\n", record.second );
+               break;
+            case OperationType::RemoveMin:
+               printf( "removeMin\n", record.second );
+               break;
+         }
+      }
+   }
+
+private:
+
+   std::vector< Record > log;
+};
 
 int main()
 {
    int32_t n;
-   std::cin >> n;
+   scanf( "%ld", &n );
 
    std::vector< int32_t > heap;
-   std::vector< std::pair< std::string, int32_t > > result;
+   heap.reserve( 100000 );
+
+   Result result;
 
    auto comp = []( int32_t const& a, int32_t const& b ) -> bool
    {
       return a > b;
    };
 
-   std::string operation;
+   char operation[10];
+
    for( int32_t i = 0; i < n; ++i )
    {
+      scanf( "%s", operation );
 
-      std::cin >> operation;
-
-      if( operation == "insert" )
+      switch( operation[0] )
       {
-         int32_t x;
-         std::cin >> x;
-         heap.push_back( x );
-         std::push_heap( std::begin( heap ), std::end( heap ), comp );
-         result.push_back( std::make_pair( "insert", x ) );
-      }
-      else if( operation == "getMin" )
-      {
-         int32_t x;
-         std::cin >> x;
-
-         bool need_insert = true;
-         while( !heap.empty() )
+         case 'i': // insert
          {
-            if( heap[0] == x )
+            int32_t x;
+            scanf( "%ld", &x );
+            heap.emplace_back( x );
+            std::push_heap( std::begin( heap ), std::end( heap ), comp );
+
+            result.LogInsert( x );
+
+            break;
+         }
+         case 'g': // "getMin"
+         {
+            int32_t x;
+            scanf( "%ld", &x );
+
+            bool need_insert = true;
+            while( !heap.empty() )
             {
-               need_insert = false;
-               break;
+               if( heap[0] == x )
+               {
+                  need_insert = false;
+                  break;
+               }
+
+               if( heap[0] > x )
+                  break;
+
+               std::pop_heap( std::begin( heap ), std::end( heap ), comp );
+               heap.pop_back();
+
+               result.LogRemoveMin();
             }
 
-            if( heap[0] > x )
-               break;
+            if( need_insert )
+            {
+               heap.emplace_back( x );
+               std::push_heap( std::begin( heap ), std::end( heap ), comp );
 
+               result.LogInsert( x );
+            }
+
+            result.LogGetMin( x );
+
+            break;
+         }
+         case 'r': //"removeMin"
+         {
+            if( heap.empty() )
+            {
+               heap.emplace_back( 0 );
+
+               result.LogInsert( 0 );
+            }
             std::pop_heap( std::begin( heap ), std::end( heap ), comp );
             heap.pop_back();
 
-            result.push_back( std::make_pair( "removeMin", 0 ) );
-         }
+            result.LogRemoveMin();
 
-         if( need_insert )
-         {
-            heap.push_back( x );
-            std::push_heap( std::begin( heap ), std::end( heap ), comp );
-            result.push_back( std::make_pair( "insert", x ) );
+            break;
          }
-         result.push_back( std::make_pair( "getMin", x ) );
-      }
-      else if( operation == "removeMin" )
-      {
-         if( heap.empty() )
-         {
-            heap.push_back( 0 );
-            result.push_back( std::make_pair( "insert", 0 ) );
-         }
-         std::pop_heap( std::begin( heap ), std::end( heap ), comp );
-         heap.pop_back();
-         result.push_back( std::make_pair( "removeMin", 0 ) );
       }
    }
 
-   std::cout << result.size() << std::endl;
-   for( auto const& p : result )
-   {
-      std::cout << p.first;
-      if( p.first != "removeMin" )
-         std::cout << " " << p.second;
-      std::cout << std::endl;
-   }
+   result.Write();
 
    return 0;
 }
