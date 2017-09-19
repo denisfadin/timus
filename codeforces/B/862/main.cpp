@@ -15,7 +15,7 @@ int main()
 
    int32_t a = 0, b = 0;
 
-   int32_t k = n-1;
+   int32_t k = n;
    int32_t i = 1;
    bool need_a = true;
    while( k > 0 )
