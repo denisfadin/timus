@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdio>
 #include <cinttypes>
 #include <unordered_map>
 #include <vector>
