@@ -1,36 +1,43 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <algorithm>
+#include <unordered_map>
+#include <vector>
+#include <functional>
 
 int main()
 {
    int32_t n;
    scanf( "%d", &n );
 
+   std::unordered_map< int32_t, std::vector< int32_t > > tree;
+
    for( int32_t i = 0; i < n-1; ++i )
    {
       int32_t x, y;
       scanf( "%d%d", &x, &y );
+
+      tree[ x ].push_back( y );
+      tree[ y ].push_back( x );
    }
 
-   int32_t a = 0, b = 0;
+   std::vector< bool > processed( n+1, false );
 
-   int32_t k = n;
-   int32_t i = 1;
-   bool need_a = true;
-   while( k > 0 )
+   int32_t a = 0;
+   std::function< void( int32_t const&, bool ) > do_process = [&]( int32_t const& i, bool be_a ) -> void
    {
-      auto min = std::min( i, k );
-      if( need_a )
-         a += min;
-      else
-         b += min;
+      if( !processed[i] )
+      {
+         processed[i] = true;
 
-      need_a = !need_a;
+         if( be_a )
+            ++a;
 
-      k -= min;
-      i *= 2;
-   }
+         for( auto const& v : tree[i] )
+            do_process( v, !be_a );
+      }
+   };
 
-   printf( "%d\n", a*b - ( n-1 ) );
+   do_process( 1, true );
+
+   printf( "%d\n", a*(n-a)-(n-1) );
 }
