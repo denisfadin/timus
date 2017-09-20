@@ -1,43 +1,50 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <cinttypes>
 #include <unordered_map>
 #include <vector>
-#include <functional>
 
 int main()
 {
    int32_t n;
-   scanf( "%d", &n );
+   scanf( "%" SCNd32, &n );
 
    std::unordered_map< int32_t, std::vector< int32_t > > tree;
 
    for( int32_t i = 0; i < n-1; ++i )
    {
       int32_t x, y;
-      scanf( "%d%d", &x, &y );
+      scanf( "%" SCNd32 "%" SCNd32, &x, &y );
 
       tree[ x ].push_back( y );
       tree[ y ].push_back( x );
    }
 
    std::vector< bool > processed( n+1, false );
+   std::vector< std::pair< int32_t, bool > > stack;
+
+   stack.push_back( std::make_pair( 1, true ) );
 
    int32_t a = 0;
-   std::function< void( int32_t const&, bool ) > do_process = [&]( int32_t const& i, bool be_a ) -> void
-   {
-      if( !processed[i] )
-      {
-         processed[i] = true;
 
-         if( be_a )
+   while( !stack.empty() )
+   {
+      auto const p = stack.back();
+      stack.pop_back();
+
+      if( !processed[ p.first ] )
+      {
+         processed[ p.first ] = true;
+         if( p.second )
             ++a;
 
-         for( auto const& v : tree[i] )
-            do_process( v, !be_a );
+         for( auto const& v : tree[ p.first ] )
+         {
+            if( !processed[v] )
+               stack.emplace_back( std::make_pair( v, !p.second ) );
+         }
       }
-   };
+   }
 
-   do_process( 1, true );
-
-   printf( "%d\n", a*(n-a)-(n-1) );
+   printf( "%" PRId64 "\n", static_cast<int64_t>(a)*static_cast<int64_t>(n-a)-(n-1) );
 }
