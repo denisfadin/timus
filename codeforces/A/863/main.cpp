@@ -7,23 +7,23 @@ int main()
    int32_t x;
    std::cin >> x;
 
-   std::string s = std::to_string( x );
-   while( s.size() && s.back() == '0' )
-      s.pop_back();
-
    std::string result = "YES";
 
-   while( s.size() )
+   std::string s = std::to_string( x );
+   auto i = std::begin( s );
+   auto j = std::end( s );
+   --j;
+   while( *j == '0' )
+      --j;
+   while( i < j )
    {
-      if( s.front() != s.back() )
+      if( *i != *j )
       {
          result = "NO";
          break;
       }
-
-      s.erase( 0, 1 );
-      if( s.size() )
-         s.pop_back();
+      ++i;
+      --j;
    }
 
    std::cout << result << std::endl;
