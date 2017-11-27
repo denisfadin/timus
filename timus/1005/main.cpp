@@ -1,7 +1,8 @@
 #include <iostream>
-#include <stdint.h>
-#include <algorithm>
+#include <cstdint>
 #include <vector>
+#include <limits>
+#include <functional>
 
 int main()
 {
@@ -17,19 +18,20 @@ int main()
 		buf.emplace_back( x );
 	}
 
-	std::sort( std::begin( buf ), std::end( buf ), std::greater< int32_t >() );
+   int32_t result = std::numeric_limits< int32_t >::max();
 
-	int32_t a = buf[0];
-	int32_t b = 0;
+   std::function< void( int32_t, int32_t, int32_t ) > f = [&]( int32_t i, int32_t s1, int32_t s2 )
+   {
+      if( i == buf.size() )
+         result = std::min( result, std::abs( s1 - s2 ) );
+      else
+      {
+         f( i+1, s1 + buf[i], s2 );
+         f( i+1, s1, s2 + buf[i] );
+      }
+   };
 
-	for( int32_t i = 1; i < n; ++i )
-	{
-		if( a - b > 0 )
-			b += buf[i];
-		else
-		  a += buf[i];
-	}
+   f( 0, 0, 0 );
 
-	std::cout << std::abs( a - b ) << std::endl;
-
+	std::cout << result << std::endl;
 }
