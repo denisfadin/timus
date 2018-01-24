@@ -2,20 +2,24 @@
 #include <cstdint>
 #include <cmath>
 
+uint32_t f( uint16_t n, uint16_t k )
+{
+  if( n == 0 )
+    return 0;
+  else if( n == 1 )
+    return k-1;
+  else if( n == 2 )
+    return (k-1)*k;
+  else
+    return (k-1)*( f(n-1,k)+f(n-2,k) );
+}
+
 int main()
 {
    uint16_t n, k;
    std::cin >> n >> k;
 
-   uint32_t result = (k-1)*std::pow( k, n-1 );
-   if( n > 2 )
-   {
-      for( int16_t i = 2; i < n-1; ++i )
-         result -= std::pow( k-1, n-i+1 )*(n-i);
-      result -= (k-1);
-   }     
-
-   std::cout << result << std::endl;
+   std::cout << f(n,k) << std::endl;
 
    return 0;
 }
