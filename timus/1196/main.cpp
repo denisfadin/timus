@@ -1,14 +1,13 @@
 #include <cstdio>
 #include <cinttypes>
 #include <vector>
-#include <algorithm>
 
 int main()
 {
    uint32_t n;
    scanf( "%" SCNu32, &n );
 
-   std::vector< uint32_t > buf;
+   std::vector< bool > buf;
    buf.resize( n );
    for( uint32_t i = 0; i < n; ++i )
       scanf( "%" SCNu32, &buf[i] );
