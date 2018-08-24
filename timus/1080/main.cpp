@@ -20,8 +20,8 @@ int main()
             break;
          --y;
 
-         edges[x+y*n] = true;
-         edges[y+x*n] = true;
+         edges[x*n+y] = true;
+         edges[y*n+x] = true;
       }
    }
 
@@ -32,19 +32,19 @@ int main()
    queue.push_back( 0 );
    for( uint32_t i = 0; i < queue.size(); ++i )
    {
-      auto const& p = queue[i];
+      auto p = queue[i];
       for( uint32_t j = 0; j < n; ++j )
       {
-         if( edges[p+j*n] )
+         if( edges[p*n+j] )
          {
-            if( result[j] == result[i] )
+            if( result[j] == result[p] )
             {
                std::cout << -1 << std::endl;
                return 0;
             }
             else
             {
-               result[j] = !result[i];
+               result[j] = !result[p];
                if( std::find( queue.begin(), queue.end(), j ) == queue.end() )
                   queue.push_back( j );
             }
