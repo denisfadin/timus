@@ -2,9 +2,31 @@
 #include <cstdio>
 #include <cinttypes>
 #include <vector>
-#include <unordered_map>
-#include <list>
-#include <algorithm>
+#include <limits>
+
+struct Edge
+{
+   uint16_t a;
+   uint16_t b;
+   int16_t c;
+};
+
+int64_t FordBellman( uint16_t N, std::vector< Edge > const& edges, uint16_t S, uint16_t F )
+{
+   std::vector< int64_t > distance( N, std::numeric_limits<int64_t>::min() );
+
+   distance[S] = 0;
+   for( uint16_t i = 1; i < N; ++i )
+   {
+      for( auto const& e : edges )
+      {
+         if( distance[e.a] != std::numeric_limits<int64_t>::min() && distance[e.b] < distance[e.a] + e.c )
+            distance[e.b] = distance[e.a] + e.c;
+      }
+   }
+
+   return distance[F];
+}
 
 int main()
 {
@@ -12,17 +34,15 @@ int main()
    uint32_t M;
    scanf( "%" SCNu16 "%" SCNu32, &N, &M );
 
-   std::unordered_map< uint16_t, std::vector< std::pair< uint16_t, uint16_t > > > edges;
-   edges.reserve( N );
+   std::vector< Edge > edges;
+   edges.resize( M );
 
    for( uint32_t i = 0; i < M; ++i )
    {
-      uint16_t a, b, c;
-      scanf( "%" SCNu16 "%" SCNu16 "%" SCNu16, &a, &b, &c );
-      --a;
-      --b;
-
-      edges[ a ].emplace_back( std::make_pair( b, c ) );
+      auto& e = edges[i];
+      scanf( "%" SCNu16 "%" SCNu16 "%" SCNd16, &e.a, &e.b, &e.c );
+      --e.a;
+      --e.b;
    }
 
    uint16_t S, F;
@@ -30,30 +50,9 @@ int main()
    --S;
    --F;
 
-   std::vector< uint64_t > distance( N, 0 );
-
-   std::list< uint16_t > queue;
-   queue.push_back( S );
-
-   while( !queue.empty() )
-   {
-      uint16_t current = queue.front();
-      queue.pop_front();
-      uint64_t current_distance = distance[ current ];
-      auto const& current_edges = edges[ current ];
-
-      for( auto const& edge : current_edges )
-      {
-         uint64_t d = current_distance + edge.second;
-         if( distance[ edge.first ] < d )
-            distance[ edge.first ] = d;
-         if( std::find( queue.begin(), queue.end(), edge.first ) == queue.end() )
-            queue.push_back( edge.first );
-      }
-   }
-
-   if( distance[ F ] )
-      printf( "%" PRIu64 "\n", distance[ F ] );
+   int64_t result = FordBellman( N, edges, S, F );
+   if( result != std::numeric_limits<int64_t>::min() )
+      printf( "%" PRId64 "\n", result );
    else
       printf( "No solution\n" );
 
