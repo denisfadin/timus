@@ -39,17 +39,22 @@ int main()
    std::vector< uint16_t > result;
    result.reserve( result_size );
 
-   result.insert( result.begin(), routes.at(0).begin(), routes.at(0).end() );
-
    /*printf( "%" PRIu16 "(): ", 0 );
    for( auto const stop : result )
       printf( "%" PRIu16 " ", stop );
    printf( "\n" );*/
 
-   for( uint16_t i = 1; i < n; ++i )
+   for( uint16_t i = 0; i < n; ++i )
    {
-      auto const idx = i*MAX_STOP;
       auto const& route = routes.at( i );
+      if( route.size() == 1 )
+         continue;
+      if( result.size() == 0 )
+      {
+         result.insert( result.begin(), route.begin(), route.end() );
+         continue;
+      }
+      auto const idx = i*MAX_STOP;
 
       auto it = result.begin();
       while( it != result.end() )
