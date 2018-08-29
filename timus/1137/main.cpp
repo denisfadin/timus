@@ -12,9 +12,6 @@ int main()
    std::vector< std::vector< uint16_t > > routes;
    routes.resize( n );
 
-   uint16_t MAX_STOP = 10001;
-   std::vector< bool > stops( n*MAX_STOP, false );
-
    uint32_t result_size = 0;
 
    for( uint16_t i = 0; i < n; ++i )
@@ -27,12 +24,8 @@ int main()
       auto& route = routes.at( i );
       route.resize( m );
 
-      auto const idx = i*MAX_STOP;
       for( uint16_t j = 0; j < m; ++j )
-      {
          scanf( "%" SCNu16, &route[j] );
-         stops.at( idx + route[j] ) = true;
-      }
       scanf( "%" SCNu16, &route[0] );
    }
 
@@ -48,25 +41,21 @@ int main()
          auto& route = routes.at( j );
          if( route.size() == 0 )
             continue;
-         auto const idx = j*MAX_STOP;
 
-         bool finded = false;
          auto it = result.begin();
          while( it != result.end() )
          {
-            if( stops.at( idx + *it ) )
+            auto finded_it = std::find( route.begin(), route.end(), *it );
+            if( finded_it != route.end() )
             {
-               auto finded_it = std::find( route.begin(), route.end(), *it );
                result.insert( it, finded_it, route.end() );
                result.insert( it + std::distance( finded_it, route.end() ), route.begin(), finded_it );
-
                route.clear();
-               finded = true;
                break;
             }
             ++it;
          }
-         if( finded )
+         if( it != result.end() )
             break;
       }
    }
