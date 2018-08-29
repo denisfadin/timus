@@ -37,54 +37,43 @@ int main()
    }
 
    std::vector< uint16_t > result;
-   result.reserve( result_size );
+   result.reserve( result_size+1 );
 
-   /*printf( "%" PRIu16 "(): ", 0 );
-   for( auto const stop : result )
-      printf( "%" PRIu16 " ", stop );
-   printf( "\n" );*/
+   result.push_back( routes.at(0).front() );
 
    for( uint16_t i = 0; i < n; ++i )
    {
-      auto const& route = routes.at( i );
-      if( route.size() == 1 )
-         continue;
-      if( result.size() == 0 )
+      for( uint16_t j = 0; j < n; ++j )
       {
-         result.insert( result.begin(), route.begin(), route.end() );
-         continue;
-      }
-      auto const idx = i*MAX_STOP;
+         auto& route = routes.at( j );
+         if( route.size() == 0 )
+            continue;
+         auto const idx = j*MAX_STOP;
 
-      auto it = result.begin();
-      while( it != result.end() )
-      {
-         if( stops.at( idx + *it ) )
+         bool finded = false;
+         auto it = result.begin();
+         while( it != result.end() )
          {
-            auto finded_it = std::find( route.begin(), route.end(), *it );
-            result.insert( it + 1, finded_it + 1, route.end() );
-            result.insert( it + 1 + std::distance( finded_it + 1, route.end() ), route.begin(), finded_it + 1 );
+            if( stops.at( idx + *it ) )
+            {
+               auto finded_it = std::find( route.begin(), route.end(), *it );
+               result.insert( it, finded_it, route.end() );
+               result.insert( it + std::distance( finded_it, route.end() ), route.begin(), finded_it );
 
-            /*printf( "%" PRIu16 "(%" PRIu16 "): ", i, *it );
-            for( auto const stop : result )
-               printf( "%" PRIu16 " ", stop );
-            printf( "\n" );*/
-
-            break;
+               route.clear();
+               finded = true;
+               break;
+            }
+            ++it;
          }
-         ++it;
-      }
-      if( it == result.end() )
-      {
-         printf( "0\n" );
-         return 0;
+         if( finded )
+            break;
       }
    }
 
-   printf( "%" PRIu32 " ", static_cast<uint32_t>( result.size() ) );
+   printf( "%" PRIu32 " ", static_cast<uint32_t>( result.size()-1 ) );
    for( auto const stop : result )
       printf( "%" PRIu16 " ", stop );
-   printf( "%" PRIu16 "\n", result[0] );
-
+   printf( "\n" );
    return 0;
 }
