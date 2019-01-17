@@ -5,31 +5,52 @@
 
 int main()
 {
-   uint32_t n, m;
-   std::cin >> n >> m;
+   uint32_t N, M;
+   std::cin >> N >> M;
 
-   std::vector< bool > similar_tasks_arr( 2*n, false );
-   std::vector< bool > similar_tasks_links( 2*n * 2*n, false );
+   uint32_t const TASKS_COUNT = N << 1;
+   std::vector< bool > similar_tasks( TASKS_COUNT * TASKS_COUNT, false );
 
-   for( uint32_t i = 0; i < m; ++i )
+   auto IsTasksLinked = [&]( uint32_t i, uint32_t j ) -> bool
+   {
+      if( i == j )
+         return false;
+      return similar_tasks.at( i*TASKS_COUNT+j );
+   };
+
+   auto IsTaskLinked = [&]( uint32_t i ) -> bool
+   {
+      return similar_tasks.at( i*TASKS_COUNT+i );
+   };
+   
+   auto MakeTasksLinked = [&]( uint32_t i, uint32_t j )
+   {
+      similar_tasks.at( i*TASKS_COUNT+j ) = true;
+      similar_tasks.at( j*TASKS_COUNT+i ) = true;
+
+      similar_tasks.at( i*TASKS_COUNT+i ) = true;
+      similar_tasks.at( j*TASKS_COUNT+j ) = true;
+   };
+
+   for( uint32_t i = 0; i < M; ++i )
    {
       uint32_t x, y;
       std::cin >> x >> y;
       --x;
       --y;
 
-      similar_tasks_arr[ x ] = true;
-      similar_tasks_arr[ y ] = true;
-
-      similar_tasks_links[ x*2*n+y ] = similar_tasks_links[ y*2*n+x ] = true;
+      MakeTasksLinked( x, y );
    }
 
-   std::vector< bool > marked( 2*n, false );
-   std::vector< int8_t > marks( 2*n, 0 );
-   for( uint32_t i = 0; i < 2*n; ++i )
+   std::vector< int8_t > marks( TASKS_COUNT, 0 );
+   uint32_t l = 0, r = 0;
+   
+   for( uint32_t i = 0; i < TASKS_COUNT; ++i )
    {
-      if( !similar_tasks_arr[ i ] )
+      if( !IsTaskLinked( i ) )
          continue;
+
+      std::vector< int8_t > local_marks( TASKS_COUNT, 0 );
 
       std::deque< uint32_t > list;
       list.push_back( i );
@@ -39,26 +60,27 @@ int main()
          uint32_t e = list.front();
          list.pop_front();
 
+         static std::vector< bool > marked( TASKS_COUNT, false );
          if( marked[ e ] )
             continue;
-
          marked[ e ] = true;
-         if( !marks[ e ] )
+
+         if( !local_marks[ e ] )
          {
-            marks[ e ] = -1;
-            //std::cout << e << " -> 1" << std::endl;
+            local_marks[ e ] = -1;
+            //std::cout << e << " -> -1" << std::endl;
          }
 
-         for( uint32_t j = 0; j < 2*n; ++j )
+         for( uint32_t j = 0; j < TASKS_COUNT; ++j )
          {
-            if( similar_tasks_links[ e*2*n+j ] )
+            if( IsTasksLinked( e, j ) )
             {
-               if( !marks[ j ] )
+               if( !local_marks[ j ] )
                {
-                  marks[ j ] = -marks[ e ];
-                  //std::cout << j << " --> " << (int32_t)marks[ j ] << std::endl;
+                  local_marks[ j ] = -local_marks[ e ];
+                  //std::cout << j << " --> " << (int32_t)local_marks[ j ] << std::endl;
                }
-               else if( marks[ j ] != -marks[ e ] )
+               else if( local_marks[ j ] != -local_marks[ e ] )
                {
                   //std::cout << j << " != " << e << std::endl;
                   std::cout << "IMPOSSIBLE" << std::endl;
@@ -69,26 +91,39 @@ int main()
             }
          }
       }
+
+      uint32_t local_l = 0, local_r = 0;
+      for( uint32_t i = 0; i < TASKS_COUNT; ++i )
+      {
+         if( local_marks[ i ] == -1 )
+            ++local_l;
+         else if( local_marks[ i ] == 1 )
+            ++local_r;
+      }
+
+      int8_t k = 1;
+      if( ( l > r && local_l > local_r ) || ( r > l && local_r > local_l ) )
+         k = -1;
+      
+      for( uint32_t i = 0; i < TASKS_COUNT; ++i )
+      {
+         if( local_marks[ i ] )
+            marks[ i ] = k*local_marks[ i ];
+      }
+
+      l += k > 0 ? local_l : local_r;
+      r += k > 0 ? local_r : local_l;
    }
 
-   uint32_t l = 0, r = 0;
-   for( uint32_t i = 0; i < 2*n; ++i )
-   {
-      if( marks[ i ] == -1 )
-         ++l;
-      else if( marks[ i ] == 1 )
-         ++r;
-   }
-
-   if( l > n || r > n )
+   if( l > N || r > N )
    {
       std::cout << "IMPOSSIBLE" << std::endl;
       return 0;
    }
 
-   for( uint32_t i = 0; i < 2*n; ++i )
+   for( uint32_t i = 0; i < TASKS_COUNT; ++i )
    {
-      if( l == n )
+      if( l == N )
          break;
       if( !marks[ i ] )
       {
@@ -97,7 +132,7 @@ int main()
       }
    }
 
-   for( uint32_t i = 0; i < 2*n; ++i )
+   for( uint32_t i = 0; i < TASKS_COUNT; ++i )
    {
       if( marks[ i ] == -1 )
          std::cout << i+1 << " ";
@@ -105,7 +140,7 @@ int main()
 
    std::cout << std::endl;
 
-   for( uint32_t i = 0; i < 2*n; ++i )
+   for( uint32_t i = 0; i < TASKS_COUNT; ++i )
    {
       if( marks[ i ] != -1 )
          std::cout << i+1 << " ";
