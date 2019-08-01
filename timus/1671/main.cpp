@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
+#include <cstdio>
 
 class DSU
 {
@@ -75,21 +75,21 @@ int main()
    std::srand( std::time( nullptr ) );
 
    uint32_t N, M;
-   std::cin >> N >> M;
+   scanf( "%" SCNu32 "%" SCNu32, &N, &M );
 
    std::vector< std::pair< uint32_t, uint32_t > > edges;
    edges.reserve( M );
    for( uint32_t i = 0; i < M; ++i )
    {
       uint32_t x, y;
-      std::cin >> x >> y;
+      scanf( "%" SCNu32 "%" SCNu32, &x, &y );
       --x;
       --y;
       edges.push_back( std::make_pair( x, y ) );
    }
 
    uint32_t Q;
-   std::cin >> Q;
+   scanf( "%" SCNu32, &Q );
 
    std::vector< uint32_t > tasks;
    tasks.reserve( Q );
@@ -99,7 +99,7 @@ int main()
    for( uint32_t i = 0; i < Q; ++i )
    {
       uint32_t e;
-      std::cin >> e;
+      scanf( "%" SCNu32, &e );
       --e;
       tasks.push_back( e );
 
@@ -128,9 +128,9 @@ int main()
    }
 
    for( auto it = result.rbegin(); it != result.rend(); ++it )
-      std::cout << *it << " ";
+      printf( "%" PRIu32 " ", *it );
 
-   std::cout << std::endl;
+   printf( "\n" );
 
    return 0;
 }
