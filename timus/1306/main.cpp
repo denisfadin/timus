@@ -2,39 +2,63 @@
 #include <cstdio>
 #include <vector>
 
-uint32_t median( std::vector< uint32_t >& arr )
+float median( std::vector< uint32_t >& arr )
 {
+   float result = 0;
+
    auto idx = arr.size() / 2; // с таким номером элемент нам требуется найти
    auto beg = arr.begin();
    auto end = arr.end();
-   while( true )
+
+   for( uint32_t i = 0; i < 2; ++i )
    {
-      auto cur = beg;
-      for( auto it = beg + 1; it != end; ++it )
+      if( i && arr.size() % 2 )
+         break;
+
+      while( true )
       {
-         if( *cur >= *it )
+         auto cur = beg;
+         for( auto it = beg + 1; it != end; ++it )
          {
-            auto tmp = *it;
-            *it = *(cur+1);
-            *(cur+1) = *cur;
-            *cur = tmp;
-            ++cur;
+            if( *cur >= *it )
+            {
+               auto tmp = *it;
+               *it = *(cur+1);
+               *(cur+1) = *cur;
+               *cur = tmp;
+               ++cur;
+            }
+         }
+
+         auto d = std::distance( beg, cur );
+         if( d == idx )
+         {
+            result += *cur;
+            if( i )
+            {
+               result /= 2;
+            }
+            else
+            {
+               beg = arr.begin();
+               end = cur;
+               idx = std::distance( beg, end ) - 1;
+            }
+            break;
+         }
+         else if( d > idx )
+         {
+            end = cur;
+         }
+         else
+         {
+            beg = cur + 1;
+            idx -= d + 1;
          }
       }
-
-      auto d = std::distance( beg, cur );
-      if( d == idx )
-         return *cur;
-      else if( d > idx )
-      {
-         end = cur;
-      }
-      else
-      {
-         beg = cur + 1;
-         idx -= d;
-      }
    }
+
+   return result;
 }
 
 int main()
@@ -47,7 +71,7 @@ int main()
    for( auto const& e : arr )
       scanf( "%" SCNu32, &e );
 
-   printf( "%" PRIu32 "\n", median( arr ) );
+   printf( "%.1f\n", median( arr ) );
 
    return 0;
 }
