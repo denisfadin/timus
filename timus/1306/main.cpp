@@ -7,42 +7,44 @@ float median( std::vector< uint32_t >& arr )
    float result = 0;
 
    auto idx = arr.size() / 2; // с таким номером элемент нам требуется найти
-   auto beg = arr.begin();
-   auto end = arr.end();
+   uint32_t beg = 0;
+   uint32_t end = arr.size();
 
-   for( uint32_t i = 0; i < 2; ++i )
+   for( uint32_t times = 0; times < 2; ++times )
    {
-      if( i && arr.size() % 2 )
+      if( times && arr.size() % 2 )
          break;
 
       while( true )
       {
          auto cur = beg;
-         for( auto it = beg + 1; it != end; ++it )
+         for( auto i = beg + 1; i < end; ++i )
          {
-            if( *cur >= *it )
+            auto cur_value = arr[cur];
+            auto i_value = arr[i];
+            if( cur_value >= i_value )
             {
-               auto tmp = *it;
-               *it = *(cur+1);
-               *(cur+1) = *cur;
-               *cur = tmp;
+               auto tmp = i_value;
+               arr[i] = arr[cur+1];
+               arr[cur+1] = cur_value;
+               arr[cur] = tmp;
                ++cur;
             }
          }
 
-         auto d = std::distance( beg, cur );
+         auto d = cur - beg;
          if( d == idx )
          {
-            result += *cur;
-            if( i )
+            result += arr[cur];
+            if( times )
             {
                result /= 2;
             }
             else
             {
-               beg = arr.begin();
+               beg = 0;
                end = cur;
-               idx = std::distance( beg, end ) - 1;
+               idx = end - 1;
             }
             break;
          }
