@@ -1,13 +1,14 @@
 #include <cinttypes>
 #include <cstdio>
 #include <queue>
+#include <deque>
 
 int main()
 {
    uint32_t N;
    scanf( "%" SCNu32, &N );
 
-   std::priority_queue< uint32_t > queue;
+   std::priority_queue< uint32_t, std::deque< uint32_t > > queue;
    uint32_t const max_queue_size = N / 2 + 1;
 
    for( uint32_t i = 0; i < N; ++i )
