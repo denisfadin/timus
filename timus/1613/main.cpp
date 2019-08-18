@@ -1,20 +1,34 @@
 #include <cstdint>
 #include <cinttypes>
 #include <cstdio>
-#include <unordered_map>
+#include <vector>
+#include <algorithm>
 
 int main()
 {
    uint32_t N;
    scanf( "%" SCNu32, &N );
 
-   std::unordered_multimap< uint32_t, uint32_t > buf;
-   for(uint32_t i = 1; i <= N; ++i )
+   using BufValueT = std::pair< uint32_t, uint32_t >;
+
+   std::vector< BufValueT > buf;
+   buf.resize( N );
+
+   for( uint32_t i = 0; i < N; ++i )
    {
-      uint32_t num;
-      scanf( "%" SCNu32, &num );
-      buf.insert( std::make_pair( std::move(num), i ) );
+      auto& p = buf[i];
+      scanf( "%" SCNu32, &p.first );
+      p.second = i+1;
    }
+
+   auto cmp = []( BufValueT const& a, BufValueT const& b ) -> bool
+   {
+      if( a.first == b.first )
+         return a.second < b.second;
+      return a.first < b.first;
+   };
+
+   std::sort( buf.begin(), buf.end(), cmp );
 
    uint32_t Q;
    scanf( "%" SCNu32, &Q );
@@ -25,14 +39,13 @@ int main()
       scanf( "%" SCNu32 " %" SCNu32 " %" SCNu32, &l, &r, &x );
 
       bool finded = false;
-      auto range = buf.equal_range( x );
-      for( auto it = range.first; it != range.second; ++it )
+
+      auto it = std::lower_bound( buf.begin(), buf.end(), std::make_pair( x, l ), cmp );
+
+      if( it != buf.end() )
       {
-         if( it->second >= l && it->second <= r )
-         {
+         if( it->first == x && it->second <= r )
             finded = true;
-            break;
-         }
       }
 
       printf( finded ? "1" : "0" );
