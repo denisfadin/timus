@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=utf-8"><META NAME="viewport" CONTENT="width=768"><META HTTP-EQUIV="X-UA-Compatible" CONTENT="IE=edge"><TITLE>1987. Вложенные отрезки @ Timus Online Judge</TITLE><LINK REL="alternate" HREFLANG="x-default" HREF="/print.aspx?space=1&amp;num=1987"><LINK REL="alternate" HREFLANG="en-us" HREF="/print.aspx?space=1&amp;num=1987&amp;locale=en"><LINK REL="alternate" HREFLANG="ru-ru" HREF="/print.aspx?space=1&amp;num=1987&amp;locale=ru"><LINK REL="stylesheet" TYPE="text/css" HREF="/style56.css"><LINK REL="shortcut icon" TYPE="image/x-icon" HREF="/favicon.ico"></HEAD><BODY><DIV CLASS="prnver"><H2 class="problem_title">1987. Вложенные отрезки</H2><DIV class="problem_limits">Ограничение времени: 1.0 секунды<BR>Ограничение памяти: 64 МБ<BR></DIV><DIV ID="problem_text"><DIV CLASS="problem_par"><DIV CLASS="problem_par_normal">На прямой лежат <i>n</i> отрезков. Для каждой пары отрезков известно, что они либо не имеют общих точек, либо все точки одного из них также принадлежат и другому отрезку.</DIV></DIV><DIV CLASS="problem_par"><DIV CLASS="problem_par_normal">Дано <i>m</i> запросов. Каждый запрос представляет собой точку на прямой. Найдите для каждого запроса отрезок минимальной длины, которому принадлежит эта точка. </DIV></DIV><H3 CLASS="problem_subtitle">Исходные данные</H3><DIV CLASS="problem_par"><DIV CLASS="problem_par_normal">В первой строке записано целое число <i>n</i>&nbsp;&mdash; количество отрезков (1 &le; <i>n</i> &le; 10<sup>5</sup>). <i>i</i>-я из следующих <i>n</i> строк содержит целые числа <i>a</i><sub><i>i</i></sub> и <i>b</i><sub><i>i</i></sub>&nbsp;&mdash; координаты концов <i>i</i>-го отрезка (1 &le; <i>a</i><sub><i>i</i></sub> &lt; <i>b</i><sub><i>i</i></sub> &le; 10<sup>9</sup>).
+Отрезки упорядочены по неубыванию <i>a</i><sub><i>i</i></sub>, а&nbsp;при <i>a</i><sub><i>i</i></sub> = <i>a</i><sub><i>j</i></sub>&nbsp;&mdash;
+по убыванию длины. Совпадающих отрезков нет. В следующей строке записано целое число <i>m</i>&nbsp;&mdash; количество запросов <nobr>(1 &le; <i>m</i> &le; 10<sup>5</sup>)</nobr>.
+В <i>j</i>-й из следующих <i>m</i> строк записано целое число <i>c</i><sub><i>j</i></sub>&nbsp;&mdash; координата точки
+(1 &le; <i>c</i><sub><i>j</i></sub> &le; 10<sup>9</sup>). Запросы упорядочены по неубыванию <i>c</i><sub><i>j</i></sub>.</DIV></DIV><H3 CLASS="problem_subtitle">Результат</H3><DIV CLASS="problem_par"><DIV CLASS="problem_par_normal">Для каждого запроса выведите номер искомого отрезка в отдельной строке. Если точка не принадлежит ни одному отрезку, выведите &laquo;-1&raquo;. Отрезки пронумерованы числами от 1 до <i>n</i> в том порядке, в котором они перечислены во входных данных.</DIV></DIV><H3 CLASS="problem_subtitle">Пример</H3><TABLE CLASS="sample"><TR><TH WIDTH="350">исходные данные</TH><TH WIDTH="350">результат</TH></TR><TR><TD><PRE>3
+2 10
+2 3
+5 7
+11
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</PRE></TD><TD><PRE>-1
+2
+2
+1
+3
+3
+3
+1
+1
+1
+-1
+</PRE></TD></TR></TABLE><DIV CLASS="problem_source"><B>Автор задачи: </B>Михаил Рубинчик (идея — Никита Первухин)<BR><B>Источник задачи: </B>Открытый командный чемпионат УрФУ по программированию — 2013<BR></DIV></DIV></DIV><script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter20918869 = new Ya.Metrika({ id:20918869, clickmap:true, trackLinks:true, accurateTrackBounce:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="https://mc.yandex.ru/watch/20918869" style="position:absolute; left:-9999px;" alt=""></div></noscript></BODY></HTML>
