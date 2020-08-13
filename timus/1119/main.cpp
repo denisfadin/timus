@@ -34,14 +34,15 @@ int main()
    std::cin >> K;
 
    std::unordered_set< PointT > diagonals;
+   std::unordered_map< PointT, uint32_t > distance;
    for( uint32_t i = 0; i < K; ++i )
    {
       PointT point;
       std::cin >> point.first >> point.second;
       diagonals.insert( point );
+      distance[ point ] = 0;
    }
 
-   std::unordered_map< PointT, double > distance;
    distance[ MakePoint(0, 0) ] = 0;
 
    std::unordered_set< PointT > processed;
@@ -51,13 +52,13 @@ int main()
    auto get_next = [ & ]()
    {
       PointT result;
-      double min_distance = std::numeric_limits< double >::max();
+      uint32_t dst = 0;
       for( auto const& p : to_process )
       {
          auto const& d = distance[ p ];
-         if( d <= min_distance )
+         if( d >= dst )
          {
-            min_distance = d;
+            dst = d;
             result = p;
          }
       }
@@ -70,12 +71,10 @@ int main()
          to_process.insert( point );
    };
 
-   auto process_point = [ & ]( PointT const& p1, PointT const& p2, double delta )
+   auto process_point = [ & ]( PointT const& p1, PointT const& p2 )
    {
-      double new_distance = distance[ p1 ] + delta;
-      if( distance.find( p2 ) == distance.end() )
-         distance[ p2 ] = new_distance;
-      else if( distance[ p2 ] > new_distance )
+      uint32_t new_distance = distance[ p1 ] + 1;
+      if( distance[ p2 ] < new_distance )
          distance[ p2 ] = new_distance;
 
       try_add_to_process( p2 );
@@ -87,30 +86,23 @@ int main()
       to_process.erase( current_point );
       processed.insert( current_point );
 
-      if( current_point.first < N )
+      for( auto const& p : diagonals )
       {
-         PointT p = current_point;
-         p.first += 1;
-         process_point( current_point, p, 100 );
-      }
-
-      if( current_point.second < M )
-      {
-         PointT p = current_point;
-         p.second += 1;
-         process_point( current_point, p, 100 );
-      }
-
-      {
-         PointT p = current_point;
-         p.first += 1;
-         p.second += 1;
-         if( diagonals.find( p ) != diagonals.end() )
-            process_point( current_point, p, 100*sqrt(2) );
+         if( p.first > current_point.first && p.second > current_point.second )
+            process_point( current_point, p );
       }
    }
 
-   std::cout << std::setprecision(0) << std::fixed << distance[ MakePoint(N, M) ] << std::endl;
+   uint32_t max_steps = 0;
+   for( auto const& d : distance )
+   {
+      if( d.second > max_steps )
+         max_steps = d.second;
+   }
+
+   double result = 100 * ( M + N - 2 * max_steps + sqrt( 2 ) * max_steps );
+
+   std::cout << std::setprecision(0) << std::fixed << result << std::endl;
 
    return 0;
 }
