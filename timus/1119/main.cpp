@@ -34,7 +34,7 @@ int main()
    std::cin >> K;
 
    std::unordered_set< PointT > diagonals;
-   std::unordered_map< PointT, uint32_t > distance;
+   std::unordered_map< PointT, int32_t > distance;
    for( uint32_t i = 0; i < K; ++i )
    {
       PointT point;
@@ -52,11 +52,11 @@ int main()
    auto get_next = [ & ]()
    {
       PointT result;
-      uint32_t dst = 0;
+      int32_t dst = 0;
       for( auto const& p : to_process )
       {
          auto const& d = distance[ p ];
-         if( d >= dst )
+         if( d <= dst )
          {
             dst = d;
             result = p;
@@ -73,8 +73,9 @@ int main()
 
    auto process_point = [ & ]( PointT const& p1, PointT const& p2 )
    {
-      uint32_t new_distance = distance[ p1 ] + 1;
-      if( distance[ p2 ] < new_distance )
+      int32_t new_distance = distance[ p1 ] - 1;
+      std::cout << new_distance << std::endl;
+      if( distance[ p2 ] > new_distance )
          distance[ p2 ] = new_distance;
 
       try_add_to_process( p2 );
@@ -93,12 +94,14 @@ int main()
       }
    }
 
-   uint32_t max_steps = 0;
+   int32_t max_steps = 0;
    for( auto const& d : distance )
    {
-      if( d.second > max_steps )
+      if( d.second < max_steps )
          max_steps = d.second;
    }
+
+   max_steps *= -1;
 
    double result = 100 * ( M + N - 2 * max_steps + sqrt( 2 ) * max_steps );
 
