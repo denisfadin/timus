@@ -1,9 +1,8 @@
 #include <iostream>
 #include <cinttypes>
-#include <unordered_set>
+#include <vector>
 #include <unordered_map>
 #include <iomanip>
-#include <limits>
 #include <cmath>
 
 using PointT = std::pair< uint32_t, uint32_t >;
@@ -25,6 +24,31 @@ namespace std
    };
 } // namespace std
 
+uint32_t CalcSteps( PointT const& p, std::vector< PointT > const& diagonals )
+{
+   static std::unordered_map< PointT, uint32_t > steps;
+
+   auto it = steps.find( p );
+   if( it != steps.end() )
+      return it->second;
+
+   uint32_t result = 0;
+   for( auto const& next : diagonals )
+   {
+      if( next.first <= p.first || next.second <= p.second )
+         continue;
+
+      auto steps = CalcSteps( next, diagonals );
+      if( result < steps )
+         result = steps;
+   }
+
+   result += 1;
+
+   steps[ p ] = result;
+   return result;
+}
+
 int main()
 {
    uint32_t N, M;
@@ -33,75 +57,21 @@ int main()
    uint32_t K;
    std::cin >> K;
 
-   std::unordered_set< PointT > diagonals;
-   std::unordered_map< PointT, int32_t > distance;
+   std::vector< PointT > diagonals;
    for( uint32_t i = 0; i < K; ++i )
    {
       PointT point;
       std::cin >> point.first >> point.second;
-      diagonals.insert( point );
-      distance[ point ] = 0;
+      diagonals.push_back( point );
    }
 
-   distance[ MakePoint(0, 0) ] = 0;
-
-   std::unordered_set< PointT > processed;
-   std::unordered_set< PointT > to_process;
-   to_process.insert( MakePoint(0, 0) );
-
-   auto get_next = [ & ]()
+   uint32_t max_steps = 0;
+   for( auto const& p : diagonals )
    {
-      PointT result;
-      int32_t dst = 0;
-      for( auto const& p : to_process )
-      {
-         auto const& d = distance[ p ];
-         if( d <= dst )
-         {
-            dst = d;
-            result = p;
-         }
-      }
-      return result;
-   };
-
-   auto try_add_to_process = [ & ]( PointT const& point )
-   {
-      if( processed.find( point ) == processed.end() )
-         to_process.insert( point );
-   };
-
-   auto process_point = [ & ]( PointT const& p1, PointT const& p2 )
-   {
-      int32_t new_distance = distance[ p1 ] - 1;
-      std::cout << new_distance << std::endl;
-      if( distance[ p2 ] > new_distance )
-         distance[ p2 ] = new_distance;
-
-      try_add_to_process( p2 );
-   };
-
-   while( !to_process.empty() )
-   {
-      PointT current_point = get_next();
-      to_process.erase( current_point );
-      processed.insert( current_point );
-
-      for( auto const& p : diagonals )
-      {
-         if( p.first > current_point.first && p.second > current_point.second )
-            process_point( current_point, p );
-      }
+      uint32_t steps = CalcSteps( p, diagonals );
+      if( max_steps < steps )
+         max_steps = steps;
    }
-
-   int32_t max_steps = 0;
-   for( auto const& d : distance )
-   {
-      if( d.second < max_steps )
-         max_steps = d.second;
-   }
-
-   max_steps *= -1;
 
    double result = 100 * ( M + N - 2 * max_steps + sqrt( 2 ) * max_steps );
 
