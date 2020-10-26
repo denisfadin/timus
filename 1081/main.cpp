@@ -1,14 +1,13 @@
 #include <cstdint>
 #include <iostream>
-#include <unordered_map>
+#include <vector>
 
 int main()
 {
    uint32_t N, K;
    std::cin >> N >> K;
 
-   std::unordered_map< uint32_t, uint32_t > cache;
-   cache.reserve( N + 1 );
+   std::vector< uint32_t > cache( N + 1, 0 );
 
    // cache[ j ] - сколько последовательностей длины j, начинающихся на 0
    // cache[ j ] - сколько последовательностей длины j+1, начинающихся на 1
@@ -17,7 +16,7 @@ int main()
    for( uint32_t i = 2; i <= N; ++i )
       cache[ i ] = cache[ i - 1 ] + cache[ i - 2 ];
 
-   if( K > cache[ N ] + cache[ N-1 ] )
+   if( K > cache[ N ] + cache[ N - 1 ] )
    {
       std::cout << -1 << std::endl;
       return 0;
