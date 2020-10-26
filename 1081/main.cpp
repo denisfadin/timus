@@ -25,7 +25,7 @@ int main()
 
    --K;
 
-   for( uint32_t i = N; i > 1; --i )
+   for( uint32_t i = N; i > 0; --i )
    {
       if( K < cache[ i ] )
          std::cout << '0';
@@ -36,7 +36,7 @@ int main()
       }
    }
 
-   std::cout << ( K ? '1' : '0' ) << std::endl;
+   std::cout << std::endl;
 
    return 0;
 }
