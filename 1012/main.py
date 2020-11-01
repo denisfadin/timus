@@ -1,13 +1,14 @@
 import sys
 
-N = int(input()) 
+N = int(input())
 K = int(input())
 
-cache = {}
-cache[1] = K-1
-cache[2] = (K-1)*K
+cache1 = K-1
+cache2 = (K-1)*K
 
 for i in range(3, N+1):
-    cache[i] = (K-1)*(cache[i-1] + cache[i-2])
+    tmp = (K-1)*(cache2 + cache1)
+    cache1 = cache2
+    cache2 = tmp
 
-print(cache[N])
+print(cache2)
