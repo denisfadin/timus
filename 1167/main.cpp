@@ -10,8 +10,8 @@ int main()
    uint_fast16_t N, K;
    std::scanf( "%" SCNuFAST16 "%" SCNuFAST16, &N, &K );
 
-   std::vector< bool > horses( N + 1 );
-   for( uint_fast16_t i = 1; i <= N; ++i )
+   std::vector< bool > horses( N );
+   for( uint_fast16_t i = 0; i < N; ++i )
    {
       uint_fast16_t h;
       std::scanf( "%" SCNuFAST16, &h );
@@ -23,23 +23,23 @@ int main()
    {
       auto const until = N - ( K - 1 );
       uint_fast16_t b = 0, w = 0;
-      for( uint_fast16_t i = 1; i <= until; ++i )
+      for( uint_fast16_t i = 0; i < until; ++i )
       {
          if( horses[ i ] )
             ++b;
          else
             ++w;
-         result[ ( 1 << 16 ) + i ] = b * w;
+         result[ i ] = b * w;
       }
 
-      for( uint_fast16_t k = 2; k <= K; ++k )
+      for( uint_fast16_t k = 1; k < K; ++k )
       {
-         auto const until = N - ( K - k );
-         for( uint_fast16_t i = k; i <= until; ++i )
+         auto const until = N - ( K - k - 1 );
+         for( uint_fast16_t i = k; i < until; ++i )
          {
             auto const prev_unhappiness = result[ ( ( k - 1 ) << 16 ) + ( i - 1 ) ];
             uint_fast16_t b = 0, w = 0;
-            for( uint_fast16_t j = i; j <= until; ++j )
+            for( uint_fast16_t j = i; j < until; ++j )
             {
                if( horses[ j ] )
                    ++b;
@@ -58,6 +58,6 @@ int main()
       }
    }
 
-   std::printf( "%" PRIu32 "\n", result[ ( K << 16 ) + N ] );
+   std::printf( "%" PRIu32 "\n", result[ ( ( K - 1 ) << 16 ) + ( N - 1 ) ] );
 
 }
