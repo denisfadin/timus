@@ -55,6 +55,6 @@ int main()
       }
    }
 
-   std::printf( "%" PRIu32 "\n", result[ ( K - 1 ) * N + ( N - 1 ) ] );
+   std::printf( "%" PRIu32 "\n", result[ K * N - 1 ] );
 
 }
