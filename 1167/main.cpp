@@ -37,6 +37,7 @@ int main()
          auto const until = N - ( K - k );
          for( uint_fast16_t i = k; i <= until; ++i )
          {
+            auto const prev_unhappiness = result[ ( ( k - 1 ) << 16 ) + ( i - 1 ) ];
             uint_fast16_t b = 0, w = 0;
             for( uint_fast16_t j = i; j <= until; ++j )
             {
@@ -45,13 +46,13 @@ int main()
                 else
                    ++w;
 
-               uint16_t unhappiness = b * w + result[ ( (k - 1 ) << 16 ) + ( i - 1 ) ];
-               auto key = ( k << 16 ) + j;
+               auto const unhappiness = static_cast< decltype( prev_unhappiness ) >( prev_unhappiness + b * w );
+               auto const key = ( k << 16 ) + j;
                auto it = result.find( key );
                if( it == result.end() )
                   result[ key ] = unhappiness;
                else
-                  result[ key ] = std::min( result[ key ], unhappiness );
+                  it->second = std::min( it->second, unhappiness );
             }
          }
       }
