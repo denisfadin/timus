@@ -1,9 +1,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cinttypes>
-#include <unordered_map>
 #include <vector>
 #include <algorithm>
+#include <limits>
 
 int main()
 {
@@ -18,7 +18,7 @@ int main()
       horses[ i ] = static_cast< bool >( h );
    }
 
-   std::unordered_map< uint32_t, uint16_t > result;
+   std::vector< uint16_t > result( K * N, std::numeric_limits< uint16_t >::max() );
 
    {
       auto const until = N - ( K - 1 );
@@ -37,7 +37,7 @@ int main()
          auto const until = N - ( K - k - 1 );
          for( uint_fast16_t i = k; i < until; ++i )
          {
-            auto const prev_unhappiness = result[ ( ( k - 1 ) << 16 ) + ( i - 1 ) ];
+            auto const prev_unhappiness = result[ ( k - 1 ) * N + ( i - 1 ) ];
             uint_fast16_t b = 0, w = 0;
             for( uint_fast16_t j = i; j < until; ++j )
             {
@@ -47,17 +47,14 @@ int main()
                    ++w;
 
                auto const unhappiness = static_cast< decltype( prev_unhappiness ) >( prev_unhappiness + b * w );
-               auto const key = ( k << 16 ) + j;
-               auto it = result.find( key );
-               if( it == result.end() )
-                  result[ key ] = unhappiness;
-               else
-                  it->second = std::min( it->second, unhappiness );
+
+               auto const key = k * N + j;
+               result[ key ] = std::min( result[ key ], unhappiness );
             }
          }
       }
    }
 
-   std::printf( "%" PRIu32 "\n", result[ ( ( K - 1 ) << 16 ) + ( N - 1 ) ] );
+   std::printf( "%" PRIu32 "\n", result[ ( K - 1 ) * N + ( N - 1 ) ] );
 
 }
