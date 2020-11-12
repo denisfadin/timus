@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <cinttypes>
 #include <vector>
-#include <string>
 #include <limits>
 #include <array>
 
@@ -30,7 +29,7 @@ public:
       }
       size = ( size & 0xFF00 ) >> 8;
 
-      uint32_t i = 0;
+      uint16_t i = 0;
       while( s1 && s2 )
       {
          uint16_t r = Get( s1, s2 );
