@@ -3,11 +3,10 @@
 #include <cinttypes>
 #include <vector>
 #include <limits>
-#include <array>
 #include <unordered_map>
 
-uint32_t Do( uint_least32_t map,
-             std::array< uint32_t, 32 > const& monsters,
+uint32_t Do( uint_least32_t const map,
+             std::vector< uint32_t > const& monsters,
              std::vector< uint_least32_t > const& shots )
 {
    if( map == 0 )
@@ -28,7 +27,7 @@ uint32_t Do( uint_least32_t map,
 
       uint32_t res = 0;
       uint_least32_t m = 1;
-      for( uint32_t i = 0; i < 32; ++i )
+      for( uint32_t i = 0; i < monsters.size(); ++i )
       {
          if( m & new_map )
             res += monsters[ i ];
@@ -49,8 +48,7 @@ int main()
    uint32_t N;
    std::scanf( "%" SCNu32, &N );
 
-   std::array< uint32_t, 32 > monsters;
-   monsters.fill( 0 );
+   std::vector< uint32_t > monsters( N, 0 );
    for( uint32_t i = 0; i < N; ++i )
       std::scanf( "%" SCNu32, &monsters[ i ] );
 
