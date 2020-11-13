@@ -5,14 +5,14 @@
 #include <limits>
 #include <unordered_map>
 
-uint32_t Do( uint_least32_t const map,
+uint32_t Do( uint32_t const map,
              std::vector< uint32_t > const& monsters,
-             std::vector< uint_least32_t > const& shots )
+             std::vector< uint32_t > const& shots )
 {
    if( map == 0 )
       return 0;
 
-   static std::unordered_map< uint_least32_t, uint32_t > cache;
+   static std::unordered_map< uint32_t, uint32_t > cache;
    auto it = cache.find( map );
    if( it != cache.end() )
       return it->second;
@@ -26,7 +26,7 @@ uint32_t Do( uint_least32_t const map,
       uint32_t new_map = map & (~shot);
 
       uint32_t res = 0;
-      uint_least32_t m = 1;
+      uint32_t m = 1;
       for( uint32_t i = 0; i < monsters.size(); ++i )
       {
          if( m & new_map )
@@ -52,9 +52,9 @@ int main()
    for( uint32_t i = 0; i < N; ++i )
       std::scanf( "%" SCNu32, &monsters[ i ] );
 
-   std::vector< uint_least32_t > shots;
+   std::vector< uint32_t > shots;
    {
-      uint_least32_t m = 7; // 111 в двоичном представлении
+      uint32_t m = 7; // 111 в двоичном представлении
       for( uint32_t i = 1; i < N - 1; ++i )
       {
          shots.push_back( m );
@@ -73,7 +73,7 @@ int main()
       }
    }
 
-   uint_least32_t map = 7;
+   uint32_t map = 7; // 111 в двоичном представлении
    for( uint32_t i = 3; i < N; ++i )
    {
       map <<= 1;
