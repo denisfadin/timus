@@ -13,12 +13,15 @@ std::pair< int32_t, int32_t > DP( uint16_t employee,
                                   std::vector< int8_t > const& ratings,
                                   std::vector< std::list< uint16_t > > const& tree )
 {
+   std::pair< int32_t, int32_t > result( ratings[ employee ], 0 );
+   if( tree[ employee ].empty() )
+      return result;
+
    static std::unordered_map< uint16_t, std::pair< int32_t, int32_t > > cache;
    auto cache_it = cache.find( employee );
    if( cache_it != cache.end() )
       return cache_it->second;
 
-   std::pair< int32_t, int32_t > result( ratings[ employee ], 0 );
    for( auto const& e : tree[ employee ] )
    {
       auto dp_e = DP( e, ratings, tree );
