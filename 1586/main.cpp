@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cinttypes>
+#include <array>
 #include <vector>
 
 uint32_t const M = 1000000009;
@@ -18,10 +19,11 @@ int main()
    uint16_t N;
    std::scanf( "%" SCNu16, &N );
 
-   std::vector< uint32_t > cache( 100, 0 );
+   std::array< uint32_t, 100 > cache, tmp_cache;
 
    std::vector< std::pair< uint8_t, uint8_t > > numbers;
    numbers.reserve( 143 );
+   cache.fill( 0 );
    for( uint16_t i = 100; i < 1000; ++i )
    {
       if( IsPrimeNumber( i ) )
@@ -36,15 +38,15 @@ int main()
 
    for( uint16_t i = 4; i <= N; ++i )
    {
-      std::vector< uint32_t > new_cache( 100, 0 );
+      tmp_cache.fill( 0 );
 
       for( auto const& num : numbers )
       {
-         new_cache[ num.first ] += cache[ num.second ];
-         new_cache[ num.first ] %= M;
+         tmp_cache[ num.first ] += cache[ num.second ];
+         tmp_cache[ num.first ] %= M;
       }
 
-      std::swap( cache, new_cache );
+      std::swap( cache, tmp_cache );
    }
 
    uint32_t result = 0;
