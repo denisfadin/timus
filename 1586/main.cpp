@@ -17,9 +17,8 @@ int main()
 {
    uint16_t N;
    std::scanf( "%" SCNu16, &N );
-   N -= 3;
 
-   std::vector< uint32_t > cache( (N + 1) * 100, 0 );
+   std::vector< uint32_t > cache( 100, 0 );
 
    std::vector< std::pair< uint8_t, uint8_t > > numbers;
    numbers.reserve( 143 );
@@ -35,20 +34,23 @@ int main()
       }
    }
 
-   for( uint16_t i = 1; i <= N; ++i )
+   for( uint16_t i = 4; i <= N; ++i )
    {
+      std::vector< uint32_t > new_cache( 100, 0 );
+
       for( auto const& num : numbers )
       {
-         auto cache_key = i * 100 + num.first;
-         cache[ cache_key ] += cache[ ( i - 1 ) * 100 + num.second ];
-         cache[ cache_key ] %= M;
+         new_cache[ num.first ] += cache[ num.second ];
+         new_cache[ num.first ] %= M;
       }
+
+      std::swap( cache, new_cache );
    }
 
    uint32_t result = 0;
    for( uint32_t i = 0; i < 100; ++i )
    {
-      result += cache[ N * 100 + i ];
+      result += cache[ i ];
       result %= M;
    }
 
