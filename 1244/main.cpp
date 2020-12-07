@@ -3,6 +3,7 @@
 #include <cinttypes>
 #include <map>
 #include <bitset>
+#include <vector>
 
 int main()
 {
@@ -31,12 +32,17 @@ int main()
       uint32_t w;
       std::scanf( "%" SCNu32, &w );
 
-      for( auto it = cache.rbegin(); it != cache.rend(); ++it )
+      std::vector< std::pair< uint32_t, BitsT > > buf;
+      buf.reserve( cache.size() );
+      for( auto it = cache.begin(); it != cache.end(); ++it )
       {
          BitsT bits = it->second;
          bits.set( i );
-         set_cache( it->first + w, std::move( bits ) );
+         buf.push_back( std::make_pair( it->first + w, std::move( bits ) ) );
       }
+
+      for( auto& value : buf )
+         set_cache( value.first, std::move( value.second ) );
 
       {
          BitsT bits;
