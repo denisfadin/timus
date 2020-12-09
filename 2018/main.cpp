@@ -19,7 +19,7 @@ int main()
    for( uint_fast16_t i = 1; i <= N; ++i )
    {
       uint64_t a_i = 0;
-      for( uint16_t j = i - 1; i - j <= A; --j )
+      for( uint_fast16_t j = i - 1; i - j <= A; --j )
       {
          a_i += cache_b[ j ];
          if( j == 0 )
