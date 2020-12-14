@@ -3,11 +3,52 @@
 #include <cinttypes>
 #include <vector>
 #include <cstdlib>
+#include <unordered_map>
+
+class Cache
+{
+public:
+
+   void Set( uint64_t pile1_idx, uint64_t pile2_idx, int16_t sum,
+             std::vector< bool > const& value )
+   {
+      uint64_t key = static_cast< uint64_t >( sum + 1 );
+      key += ( pile1_idx << 32 );
+      key += ( pile2_idx << 48 );
+
+      mCache[ key ] = value;
+   }
+
+   std::vector< bool > const* Get( uint64_t pile1_idx, uint64_t pile2_idx, int16_t sum )
+   {
+      uint64_t key = static_cast< uint64_t >( sum + 1 );
+      key += ( pile1_idx << 32 );
+      key += ( pile2_idx << 48 );
+
+      auto it = mCache.find( key );
+      if( it != mCache.end() )
+         return &(it->second);
+
+      return nullptr;
+   }
+
+private:
+
+   std::unordered_map< uint64_t, std::vector< bool > > mCache;
+};
 
 std::vector< bool > Do( std::vector< bool > const& pile1, uint16_t pile1_idx,
                         std::vector< bool > const& pile2, uint16_t pile2_idx,
                         int16_t sum )
 {
+   static Cache cache;
+
+   {
+      std::vector< bool > const* cache_result = cache.Get( pile1_idx, pile2_idx, sum );
+      if( cache_result )
+         return *cache_result;
+   }
+
    if( ( pile1_idx == pile1.size() && pile2_idx + 1 == pile2.size() ) ||
        ( pile1_idx + 1 == pile1.size() && pile2_idx == pile2.size() ) )
    {
@@ -21,6 +62,7 @@ std::vector< bool > Do( std::vector< bool > const& pile1, uint16_t pile1_idx,
             result.reserve( pile1.size() + pile2.size() );
 
             result.push_back( false );
+            cache.Set( pile1_idx, pile2_idx, sum, result );
             return result;
          }
          return std::vector< bool >{};
@@ -34,6 +76,7 @@ std::vector< bool > Do( std::vector< bool > const& pile1, uint16_t pile1_idx,
             result.reserve( pile1.size() + pile2.size() );
 
             result.push_back( true );
+            cache.Set( pile1_idx, pile2_idx, sum, result );
             return result;
          }
          return std::vector< bool >{};
@@ -52,6 +95,7 @@ std::vector< bool > Do( std::vector< bool > const& pile1, uint16_t pile1_idx,
          if( !result.empty() )
          {
             result.push_back( false );
+            cache.Set( pile1_idx, pile2_idx, sum, result );
             return result;
          }
       }
@@ -69,11 +113,13 @@ std::vector< bool > Do( std::vector< bool > const& pile1, uint16_t pile1_idx,
          if( !result.empty() )
          {
             result.push_back( true );
+            cache.Set( pile1_idx, pile2_idx, sum, result );
             return result;
          }
       }
    }
 
+   cache.Set( pile1_idx, pile2_idx, sum, std::vector< bool >{} );
    return std::vector< bool >{};
 }
 
