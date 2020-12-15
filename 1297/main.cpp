@@ -12,10 +12,10 @@ int main()
 
    std::string_view str( buffer.data(), std::strlen( buffer.data() ) );
 
-   std::vector< std::string_view > cache( str.size() + 1 );
+   std::string_view result;
    if( !str.empty() )
    {
-      cache[ 1 ] = str.substr( 0, 1 );
+      result = str.substr( 0, 1 );
 
       // odd
       {
@@ -26,8 +26,8 @@ int main()
                    && str[ leftBorder ] == str[ rightBorder ] )
             {
                uint16_t size = rightBorder - leftBorder + 1;
-               if( cache[ size ].empty() )
-                  cache[ size ] = str.substr( leftBorder, size );
+               if( size > result.size() )
+                  result = str.substr( leftBorder, size );
 
                --leftBorder;
                ++rightBorder;
@@ -44,23 +44,13 @@ int main()
                    && str[ leftBorder ] == str[ rightBorder ] )
             {
                uint16_t size = rightBorder - leftBorder + 1;
-               if( cache[ size ].empty() )
-                  cache[ size ] = str.substr( leftBorder, size );
+               if( size > result.size() )
+                  result = str.substr( leftBorder, size );
 
                --leftBorder;
                ++rightBorder;
             }
          }
-      }
-   }
-
-   std::string_view result;
-   for( uint16_t i = cache.size() - 1; i > 0; --i )
-   {
-      if( !cache[ i ].empty() )
-      {
-         result = cache[ i ];
-         break;
       }
    }
 
