@@ -1,21 +1,29 @@
 #include <cstdint>
 #include <cstdio>
 #include <cinttypes>
-#include <vector>
-#include <algorithm>
 
 int main()
 {
    uint32_t N;
    std::scanf( "%" SCNu32, &N );
 
-   std::vector< uint32_t > data( N );
+   uint32_t result;
+   uint32_t result_count = 0;
+
+   uint32_t k;
    for( uint32_t i = 0; i < N; ++i )
-      std::scanf( "%" SCNu32, &data[ i ] );
+   {
+      std::scanf( "%" SCNu32, &k );
+      if( result_count == 0 || result == k )
+      {
+         result = k;
+         ++result_count;
+      }
+      else
+         --result_count;
+   }
 
-   std::sort( data.begin(), data.end() );
-
-   std::printf( "%" PRIu32 "\n", data[ N >> 1 ] );
+   std::printf( "%" PRIu32 "\n", result );
 
    return 0;
 }
