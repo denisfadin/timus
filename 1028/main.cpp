@@ -22,9 +22,9 @@ int main()
 
       if( y != local_y )
       {
-         data.insert( data.end(), local_data.begin(), local_data.end() );
+         for( auto elem : local_data )
+            data.insert( std::upper_bound( data.begin(), data.end(), elem ), elem );
          local_data.clear();
-         std::sort( data.begin(), data.end() );
          local_y = y;
       }
 
