@@ -14,8 +14,8 @@ int main()
       5000
    };
 
-   std::array< uint16_t, 6 > notes_count;
-   for( uint16_t i = 0; i < notes.size(); ++i )
+   std::array< uint16_t, notes.size() > notes_count;
+   for( uint16_t i = 0; i < notes_count.size(); ++i )
       std::scanf( "%" SCNu16, &notes_count[ i ] );
 
    uint16_t price;
