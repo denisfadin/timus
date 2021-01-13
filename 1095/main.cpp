@@ -37,7 +37,7 @@ int main()
       for( uint32_t i = 1; i < 5; ++i )
          --digit_count[ i ];
 
-      uint64_t rem = 0;
+      uint32_t rem = 0;
       for( uint32_t i = 1; i <= 9; ++i )
       {
          while( digit_count[ i ] )
