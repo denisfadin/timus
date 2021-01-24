@@ -1,29 +1,5 @@
 import sys
 
-def calc(n, rem, data, i=0):
-    rem1 = rem - data[i][1]
-    rem2 = rem - data[i][2]
-
-    if rem1 == 0:
-        return '1'
-    if rem2 == 0:
-        return '2'
-
-    if i+1 < len(data):
-        if rem1 < 0:
-            rem1 += n
-        res1 = calc(n, rem1, data, i+1)
-        if res1:
-            return res1 + '1'
-
-        if rem2 < 0:
-            rem2 += n
-        res2 = calc(n, rem2, data, i+1)
-        if res2:
-            return res2 + '2'
-
-    return None
-
 def main():
     N = int(input())
 
@@ -31,20 +7,38 @@ def main():
         print(N)
         return
 
-    data = list()
-    num = 1
-    for i in range(30):
-        d = dict()
-        d[1] = num % N
-        d[2] = (num << 1) % N
-        data.append(d)
-        num *= 10
+    data = dict()
+    data[1] = 1
+    data[2] = 2
 
-    result = calc(N, N, data)
-    if result:
-        print(result)
-    else:
-        print('Impossible')
+    num = 1
+    for i in range(2, 31):
+        num *= 10
+        new_data = dict()
+
+        for j in range(2):
+            tmp_num = num << j
+            rem = tmp_num % N
+
+            for key, value in data.items():
+                v = tmp_num + value
+                k = key + rem
+
+                if k == N:
+                    print(v)
+                    return
+
+                if k > N:
+                    k -= N
+
+                if k in new_data and new_data[k] < v:
+                    continue
+
+                new_data[k] = v
+
+        data = new_data
+
+    print('Impossible')
 
 if __name__ == '__main__':
     main()
