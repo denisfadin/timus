@@ -7,10 +7,10 @@
 
 int main()
 {
-   uint32_t N, M;
-   std::scanf( "%" SCNu32 "%" SCNu32 " ", &N, &M );
+   uint16_t N, M;
+   std::scanf( "%" SCNu16 "%" SCNu16 " ", &N, &M );
 
-   std::vector< uint32_t > suitable_symbols_data( 100000, 0 );
+   std::vector< uint16_t > suitable_symbols_data( 100000, 0 );
    uint32_t text_size = 0;
    while( true )
    {
@@ -19,9 +19,14 @@ int main()
          break;
       if( std::isalpha( sym ) || sym == ' ' )
       {
-         suitable_symbols_data[ text_size ] = 1;
          if( text_size )
-            suitable_symbols_data[ text_size ] += suitable_symbols_data[ text_size - 1 ];
+         {
+            uint16_t tmp = suitable_symbols_data[ text_size - 1 ];
+            ++tmp;
+            suitable_symbols_data[ text_size ] = std::min( tmp, M );
+         }
+         else
+            suitable_symbols_data[ text_size ] = 1;
       }
       ++text_size;
    }
@@ -37,7 +42,7 @@ int main()
    {
       dp[ i ] = dp[ i - N ] + 1;
 
-      uint32_t TO = std::min( suitable_symbols_data[ i ], M );
+      uint32_t TO = suitable_symbols_data[ i ];
       if( TO <= N )
          continue;
 
