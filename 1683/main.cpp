@@ -26,7 +26,6 @@ int main()
    n = N;
    while( n != 1 )
    {
-      ++result;
       std::printf( "%" PRIu32 " ", n >> 1 );
       n -= n >> 1;
    }
