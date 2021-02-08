@@ -17,10 +17,8 @@ int main()
    uint32_t n = N;
    while( n != 1 )
    {
-      auto d = n % 2;
       ++result;
-      n >>= 1;
-      n += d;
+      n -= n >> 1;
    }
 
    std::printf( "%" PRIu32 "\n", result );
@@ -28,11 +26,9 @@ int main()
    n = N;
    while( n != 1 )
    {
-      auto d = n % 2;
       ++result;
       std::printf( "%" PRIu32 " ", n >> 1 );
-      n >>= 1;
-      n += d;
+      n -= n >> 1;
    }
 
    std::printf( "\n" );
