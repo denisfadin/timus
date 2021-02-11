@@ -1,8 +1,8 @@
-#include <iostream>
 #include <cstdint>
-#include <cmath>
+#include <cstdio>
+#include <cinttypes>
 
-uint32_t f( uint16_t n, uint16_t k )
+uint32_t f( uint32_t n, uint32_t k )
 {
   if( n == 0 )
     return 0;
@@ -16,10 +16,10 @@ uint32_t f( uint16_t n, uint16_t k )
 
 int main()
 {
-   uint16_t n, k;
-   std::cin >> n >> k;
+   uint32_t n, k;
+   std::scanf( "%" SCNu32 "%" SCNu32, &n, &k );
 
-   std::cout << f(n,k) << std::endl;
+   std::printf( "%" PRIu32 "\n", f(n,k) );
 
    return 0;
 }
