@@ -3,10 +3,9 @@
 #include <cinttypes>
 #include <vector>
 #include <limits>
-#include <unordered_map>
 #include <algorithm>
 
-uint32_t DP( uint32_t key, std::unordered_map< uint32_t, std::vector< uint32_t > >& kids )
+uint32_t DP( uint32_t key, std::vector< std::vector< uint32_t > > const& kids )
 {
    auto const& key_kids = kids[ key ];
    if( key_kids.empty() )
@@ -70,8 +69,7 @@ int main()
       }
    }
 
-   std::unordered_map< uint32_t, std::vector< uint32_t > > kids;
-   kids.reserve( N );
+   std::vector< std::vector< uint32_t > > kids( N + 1 );
 
    for( uint32_t i = 1; i <= N; ++i )
    {
