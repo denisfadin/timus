@@ -12,15 +12,26 @@ uint32_t DP( uint32_t key, std::unordered_map< uint32_t, std::vector< uint32_t >
    if( key_kids.empty() )
       return 0;
 
-   uint32_t key_kids_max = 0;
+   std::vector< uint32_t > kids_values;
+   kids_values.reserve( key_kids.size() );
+
    for( auto const& kid : key_kids )
-      key_kids_max = std::max( key_kids_max, DP( kid, kids ) );
+      kids_values.push_back( DP( kid, kids ) );
 
-   uint32_t result = key_kids_max + 1;
-   if( key_kids.size() > key_kids_max + 1 )
-      result += key_kids.size() - key_kids_max - 1;
+   std::sort( kids_values.begin(), kids_values.end(), std::greater() );
 
-   return result;
+   uint32_t result = 1;
+   uint32_t last_steps = kids_values[ 0 ];
+   for( uint32_t i = 1; i < kids_values.size(); ++i )
+   {
+      ++result;
+      if( last_steps > 0 )
+         last_steps = std::max( last_steps - 1, kids_values[ i ] );
+      else
+         last_steps = kids_values[ i ];
+   }
+
+   return result + last_steps;
 }
 
 int main()
