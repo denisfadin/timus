@@ -4,25 +4,26 @@
 #include <vector>
 #include <cstring>
 #include <string_view>
-#include <algorithm>
 #include <limits>
 
-std::vector< std::pair< uint16_t, uint16_t > > PalindromesList( std::string_view str )
+uint32_t MakeKey( uint32_t size, uint32_t i, uint32_t j )
 {
-   std::vector< std::pair< uint16_t, uint16_t > > result;
+   return i * (size + 1) + j;
+}
 
-   for( uint16_t i = 0; i < str.size(); ++i )
-      result.push_back( std::make_pair( i, i ) );
+std::vector< bool > PalindromesSet( std::string_view str )
+{
+   std::vector< bool > result( str.size() * ( str.size() + 1 ), false );
 
    // odd
    {
-      for( int16_t indMiddle = 0; indMiddle < str.size(); ++indMiddle )
+      for( int32_t indMiddle = 0; indMiddle < str.size(); ++indMiddle )
       {
-         int16_t leftBorder = indMiddle - 1, rightBorder = indMiddle + 1;
+         int32_t leftBorder = indMiddle - 1, rightBorder = indMiddle + 1;
          while( leftBorder >= 0 && rightBorder < str.size()
                 && str[ leftBorder ] == str[ rightBorder ] )
          {
-            result.push_back( std::make_pair( leftBorder, rightBorder ) );
+            result[ MakeKey( str.size(), leftBorder, rightBorder - leftBorder + 1 ) ] = true;
             --leftBorder;
             ++rightBorder;
          }
@@ -31,13 +32,13 @@ std::vector< std::pair< uint16_t, uint16_t > > PalindromesList( std::string_view
 
    // even
    {
-      for( int16_t indMiddle = 0; indMiddle < str.size(); ++indMiddle )
+      for( int32_t indMiddle = 0; indMiddle < str.size(); ++indMiddle )
       {
-         int16_t leftBorder = indMiddle, rightBorder = indMiddle + 1;
+         int32_t leftBorder = indMiddle, rightBorder = indMiddle + 1;
          while( leftBorder >= 0 && rightBorder < str.size()
                 && str[ leftBorder ] == str[ rightBorder ] )
          {
-            result.push_back( std::make_pair( leftBorder, rightBorder ) );
+            result[ MakeKey( str.size(), leftBorder, rightBorder - leftBorder + 1 ) ] = true;
             --leftBorder;
             ++rightBorder;
          }
@@ -54,72 +55,56 @@ int main()
 
    std::string_view name( buffer.data(), std::strlen( buffer.data() ) );
 
-   std::vector< std::pair< uint16_t, uint16_t > > palindromes =
-      PalindromesList( name );
-
-   std::sort( palindromes.begin(), palindromes.end(),
-      []( std::pair< uint16_t, uint16_t > const& a, std::pair< uint16_t, uint16_t > const& b )
-      {
-         return a.first < b.first;
-      });
+   std::vector< bool > palindromes = PalindromesSet( name );
 
    struct CacheData
    {
-      uint16_t mCount = std::numeric_limits< uint16_t >::max();
-      uint16_t mPos;
+      uint32_t mCount;
+      uint32_t mLastLength;
    };
 
    std::vector< CacheData > cache( name.size() );
+   cache[ 0 ].mCount = 1;
+   cache[ 0 ].mLastLength = 1;
 
-   // doing algorihtm
+   for( uint32_t i = 1; i < name.size(); ++i )
    {
-      for( uint16_t i = 0; i < palindromes.size(); ++i )
-      {
-         auto const& pal = palindromes[ i ];
+      cache[ i ].mCount = cache[ i - 1 ].mCount + 1;
+      cache[ i ].mLastLength = 1;
 
-         if( pal.first == 0 )
+      for( uint32_t j = 1; j <= i; ++j )
+      {
+         if( !palindromes[ MakeKey( name.size(), i - j, j+1 ) ] )
+            continue;
+
+         if( j == i )
          {
-            CacheData& cache_data = cache[ pal.second ];
-            if( cache_data.mCount > 1 )
-            {
-               cache_data.mCount = 1;
-               cache_data.mPos = i;
-            }
+            cache[ i ].mCount = 1;
+            cache[ i ].mLastLength = j+1;
+            continue;
          }
-         else
-         {
-            CacheData& cache_data_second = cache[ pal.second ];
-            CacheData const& cache_data_first = cache[ pal.first - 1 ];
-            if( cache_data_second.mCount > cache_data_first.mCount + 1 )
-            {
-               cache_data_second.mCount = cache_data_first.mCount + 1;
-               cache_data_second.mPos = i;
-            }
-         }
+
+         if( cache[ i ].mCount <= cache[ i-j-1 ].mCount + 1 )
+            continue;
+
+         cache[ i ].mCount = cache[ i-j-1 ].mCount + 1;
+         cache[ i ].mLastLength = j + 1;
       }
    }
 
+   std::vector< uint32_t > lengths;
+   for( int32_t i = name.size() - 1; i >= 0; )
    {
+      lengths.push_back( cache[ i ].mLastLength );
+      i -= cache[ i ].mLastLength;
+   }
 
-      uint16_t i = name.size() - 1;
-      std::printf( "%" PRIu16 "\n", cache[ i ].mCount );
+   std::printf( "%" PRIu32 "\n", lengths.size() );
 
-      std::vector< std::string_view > result;
-      while( true )
-      {
-         CacheData const& data = cache[ i ];
-         std::pair< uint16_t, uint16_t > const& pal = palindromes[ data.mPos ];
-         result.push_back( name.substr( pal.first, pal.second - pal.first + 1 ) );
-
-         if( pal.first > 0 )
-            i = pal.first - 1;
-         else
-            break;
-      }
-
-      for( auto it = result.rbegin(); it != result.rend(); ++it )
-         std::printf( "%.*s ", static_cast< int >( it->size() ), it->data() );
-      std::printf( "\n" );
+   for( uint32_t pos = 0; !lengths.empty(); lengths.pop_back() )
+   {
+      std::printf( "%.*s ", static_cast< int >( lengths.back() ), name.data() + pos );
+      pos += lengths.back();
    }
 
    return 0;
