@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-uint32_t abs_diff( uint32_t a, uint32_t b )
+inline uint32_t abs_diff( uint32_t a, uint32_t b )
 {
    return a > b ? a - b : b - a;
 }
