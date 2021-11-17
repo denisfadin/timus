@@ -3,7 +3,7 @@
 #include <cinttypes>
 #include <vector>
 
-void update( std::vector< uint64_t >& fenwick_tree,
+void update( std::vector< uint32_t >& fenwick_tree,
              uint32_t N,
              int32_t x,
              int32_t y,
@@ -16,13 +16,13 @@ void update( std::vector< uint64_t >& fenwick_tree,
             fenwick_tree[ (i*N+j)*N+k ] += diff;
 }
 
-uint64_t sum( std::vector< uint64_t >& fenwick_tree,
+uint32_t sum( std::vector< uint32_t >& fenwick_tree,
               uint32_t N,
               int32_t x,
               int32_t y,
               int32_t z )
 {
-   uint64_t result = 0;
+   uint32_t result = 0;
 
    for( int32_t i = x; i >= 0; i = (i & (i+1)) - 1 )
       for( int32_t j = y; j >= 0; j = (j & (j+1)) - 1 )
@@ -37,7 +37,7 @@ int main()
    uint32_t N;
    std::scanf( "%" SCNu32, &N );
 
-   std::vector< uint64_t > fenwick_tree( N*N*N, 0 );
+   std::vector< uint32_t > fenwick_tree( N*N*N, 0 );
 
    while( true )
    {
