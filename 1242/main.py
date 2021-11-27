@@ -3,12 +3,14 @@ from sys import stdin
 def main():
     N = int(input())
 
-    reletions = set()
+    reletions1 = [[] for i in range(N+1)]
+    reletions2 = [[] for i in range(N+1)]
     for line in stdin:
         if line[0] == 'B':
             break
         a, b = map(int, line.split())
-        reletions.add((a, b))
+        reletions1[a].append(b)
+        reletions2[b].append(a)
 
     result = [True] * (N+1)
     for line in stdin:
@@ -18,17 +20,15 @@ def main():
         while len(to_process) > 0:
             x = to_process.pop()
             result[ x ] = False
-            for i in range(1, N+1):
-                if (x, i) in reletions:
-                    to_process.append(i)
+            for i in reletions1[ x ]:
+                to_process.append(i)
         # поднимаемся вверх
         to_process = [a]
         while len(to_process) > 0:
             x = to_process.pop()
             result[ x ] = False
-            for i in range(1, N+1):
-                if (i, x) in reletions:
-                    to_process.append(i)
+            for i in reletions2[ x ]:
+                to_process.append(i)
 
     result_list = []
     for i in range(1, N+1):
