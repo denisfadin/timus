@@ -3,7 +3,7 @@
 #include <cinttypes>
 #include <vector>
 
-std::vector< uint32_t > prefix_function( std::vector< char > const& s )
+std::vector< uint32_t > calc_prefix( std::vector< char > const& s )
 {
 	uint32_t n = static_cast< uint32_t >( s.size() );
 	std::vector< uint32_t > pi( n );
@@ -20,64 +20,48 @@ std::vector< uint32_t > prefix_function( std::vector< char > const& s )
 	return pi;
 }
 
+// kmp algorithm
+int32_t find( std::vector< char > const& str, std::vector< char > const& pattern )
+{
+    std::vector< uint32_t > pattern_prefix = calc_prefix( pattern );
+
+    uint32_t i = 0, j = 0;
+    while( i < str.size() && j < pattern.size() )
+    {
+        if( str[ i ] == pattern[ j ] )
+        {
+            ++i;
+            ++j;
+            if( j == pattern.size() )
+                return i - pattern.size();
+        }
+        else
+        {
+            if( j == 0 )
+                ++i;
+            else
+                j = pattern_prefix[ j - 1 ];
+        }
+    }
+    return -1;
+}
+
 int main()
 {
     uint32_t N;
     std::scanf( "%" SCNu32 " ", &N );
 
-    std::vector< char > str1( N ), str2( N );
-
+    std::vector< char > pattern( N );
     for( uint32_t i = 0; i < N; ++ i )
-        str1[ i ] = std::getchar();
+        pattern[ i ] = std::getchar();
 
     std::getchar();
 
+    std::vector< char > str( 2*N );
     for( uint32_t i = 0; i < N; ++i )
-        str2[ i ] = std::getchar();
-    std::vector< uint32_t > str2_prefix = prefix_function( str2 );
+        str[ i ] = str[ i + N ] = std::getchar();
 
-    int32_t result = -1;
-
-    uint32_t pos = 0;
-    uint32_t i = 0, j = 0;
-
-    while( true )
-    {
-        if( str1[ i ] == str2[ j ] )
-        {
-            ++j;
-            if( j == N )
-            {
-                if( pos == 0 )
-                    result = 0;
-                else
-                    result = N - pos;
-                break;
-            }
-            ++i;
-            if( i == N )
-                i = 0;
-        }
-        else
-        {
-            if( i < pos )
-                break;
-            if( j == 0 )
-            {
-                ++i;
-                if( i == N )
-                    break;
-                pos = i;
-            }
-            else
-            {
-                j = str2_prefix[ j-1 ];
-                pos = i - j;
-            }
-        }
-    }
-
-    std::printf( "%" PRId32 "\n", result );
+    std::printf( "%" PRId32 "\n", find( str, pattern ) );
 
     return 0;
 }
