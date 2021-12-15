@@ -8,100 +8,93 @@
 
 struct Node
 {
-   std::map< char, Node* > edges;
-   bool leaf = false;
+   std::map< char, uint32_t > edges;
+   bool isTerminal = false;
 };
+
+std::vector< Node > init_nodes()
+{
+    std::vector< Node > nodes( 16 );
+
+    nodes[ 0 ].isTerminal = true;
+    nodes[ 0 ].edges[ 'o' ] = 1;
+    nodes[ 0 ].edges[ 'i' ] = 5;
+    nodes[ 0 ].edges[ 'p' ] = 12;
+
+    nodes[ 1 ].edges[ 'n' ] = 2;
+    nodes[ 1 ].edges[ 'u' ] = 3;
+
+    nodes[ 2 ].edges[ 'e' ] = 0;
+
+    nodes[ 3 ].edges[ 't' ] = 4;
+
+    nodes[ 4 ].isTerminal = true;
+    nodes[ 4 ].edges[ 'p' ] = 7;
+    nodes[ 4 ].edges[ 'o' ] = 1;
+    nodes[ 4 ].edges[ 'i' ] = 5;
+
+    nodes[ 5 ].edges[ 'n' ] = 6;
+
+    nodes[ 6 ].isTerminal = true;
+    nodes[ 6 ].edges[ 'p' ] = 7;
+    nodes[ 6 ].edges[ 'o' ] = 1;
+    nodes[ 6 ].edges[ 'i' ] = 5;
+
+    nodes[ 7 ].edges[ 'u' ] = 8;
+
+    nodes[ 8 ].edges[ 't' ] = 9;
+
+    nodes[ 9 ].isTerminal = true;
+    nodes[ 9 ].edges[ 'o' ] = 10;
+    nodes[ 9 ].edges[ 'i' ] = 5;
+    nodes[ 9 ].edges[ 'p' ] = 12;
+
+    nodes[ 10 ].edges[ 'n' ] = 11;
+    nodes[ 10 ].edges[ 'u' ] = 3;
+
+    nodes[ 11 ].isTerminal = true;
+    nodes[ 11 ].edges[ 'e' ] = 0;
+    nodes[ 11 ].edges[ 'o' ] = 1;
+    nodes[ 11 ].edges[ 'i' ] = 5;
+    nodes[ 11 ].edges[ 'p' ] = 12;
+
+    nodes[ 12 ].edges[ 'u' ] = 13;
+
+    nodes[ 13 ].edges[ 't' ] = 14;
+
+    nodes[ 14 ].edges[ 'o' ] = 15;
+
+    nodes[ 15 ].edges[ 'n' ] = 0;
+
+    return nodes;
+}
+
+bool check( std::string const& str )
+{
+    static std::vector< Node > const nodes = init_nodes();
+
+    uint32_t pos = 0;
+    for( uint32_t i = 0; i < str.size(); ++i )
+    {
+        auto const& node = nodes[ pos ];
+        auto it = node.edges.find( str[ i ] );
+        if( it == node.edges.end() )
+            return false;
+        pos = it->second;
+    }
+    return nodes[ pos ].isTerminal;
+}
 
 int main()
 {
-   std::vector< std::string > const dict = {
-      "out",
-      "output",
-      "outputon", // +
-      "outputone", // +
-      "in",
-      "input",
-      "inputon", // +
-      "inputone", // +
-      "puton",
-      "one"
-   };
-
-   std::list< std::unique_ptr< Node > > nodes;
-   nodes.push_back( std::make_unique< Node >() );
-
-   for( auto const& str : dict )
-   {
-      Node* curr = nodes.front().get();
-      for( auto const sym : str )
-      {
-         auto it = curr->edges.find( sym );
-         if( it != curr->edges.end() )
-            curr = it->second;
-         else
-         {
-            nodes.push_back( std::make_unique< Node >() );
-            curr->edges[ sym ] = nodes.back().get();
-            curr = nodes.back().get();
-         }
-      }
-      curr->leaf = true;
-   }
-
-   for( auto const& node : nodes )
-   {
-      if( !node->leaf )
-         continue;
-
-      Node const* root = nodes.front().get();
-      for( auto const& edge : root->edges )
-      {
-         auto it = node->edges.find( edge.first );
-         if( it != node->edges.end() )
-            continue;
-         node->edges[ edge.first ] = edge.second;
-      }
-   }
-
-   /*auto get_node = [ & ]( std::string const& str )
-   {
-      Node* curr = nodes.front().get();
-      for( auto sym : str )
-         curr = curr->edges[ sym ];
-      return curr;
-   };
-
-   get_node( "input" )->edges[ 'o' ] = get_node( "puto" );
-   get_node( "output" )->edges[ 'o' ] = get_node( "puto" );*/
-
-
    uint32_t N;
    std::cin >> N >> std::ws;
 
    std::string str;
-   str.reserve( 10000000 );
-
    for( uint32_t i = 0; i < N; ++i )
    {
       std::getline( std::cin, str );
-      Node* curr = nodes.front().get();
-      for( auto sym : str )
-      {
-          std::cout << sym << std::endl;
-         auto it = curr->edges.find( sym );
-         if( it == curr->edges.end() )
-         {
-            curr = nullptr;
-            break;
-         }
-         else
-            curr = it->second;
-      }
-
-      if( curr && curr->leaf )
-         std::cout << "YES" << std::endl;
-      else
-         std::cout << "NO" << std::endl;
+      std::cout << ( check( str ) ? "YES" : "NO" ) << std::endl;
    }
 
    return 0;
