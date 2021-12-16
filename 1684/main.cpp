@@ -25,14 +25,28 @@ std::vector< std::string_view > Do( std::string const& word, std::string const& 
 {
    std::vector< uint32_t > word_prefix = CalcPrefix( word );
 
-   std::vector< uint32_t > jack_word_poses( jack_word.size(), 0 );
+   std::vector< std::string_view > result;
+   uint32_t size = 0;
+   uint32_t prev_idx = 0;
+
    uint32_t pos = 0;
    uint32_t i = 0;
    while( i < jack_word.size() )
    {
       if( jack_word[ i ] == word[ pos ] )
       {
-         jack_word_poses[ i ] = pos;
+         if( size == 0 || prev_idx < pos )
+         {
+            ++size;
+            prev_idx = pos;
+         }
+         else
+         {
+            result.push_back( std::string_view( word.c_str(), size - pos ) );
+            prev_idx = pos;
+            size = pos + 1;
+         }
+
          ++pos;
          ++i;
       }
@@ -42,25 +56,6 @@ std::vector< std::string_view > Do( std::string const& word, std::string const& 
             return std::vector< std::string_view >();
          else
             pos = word_prefix[ pos - 1 ];
-      }
-   }
-
-   std::vector< std::string_view > result;
-
-   uint32_t size = 1;
-   uint32_t prev_idx = jack_word_poses[ 0 ];
-   for( uint32_t i = 1; i < jack_word_poses.size(); ++i )
-   {
-      if( jack_word_poses[ i ] > prev_idx )
-      {
-         ++size;
-         prev_idx = jack_word_poses[ i ];
-      }
-      else
-      {
-         result.push_back( std::string_view( word.c_str(), size - jack_word_poses[ i ] ) );
-         prev_idx = jack_word_poses[ i ];
-         size = jack_word_poses[ i ] + 1;
       }
    }
 
