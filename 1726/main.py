@@ -1,14 +1,24 @@
+def process_list(l):
+    l.sort()
+    result = 0
+    p = 0
+    for i in range(1, len(l)):
+        p = p + (l[i]-l[i-1])*i*2
+        result += p
+    return result
+
 def main():
     n = int(input())
-    points = list()
+
+    x_list = list()
+    y_list = list()
     for i in range(n):
-        points.append(tuple(map(int, input().split())))
-    sum = 0
-    for i in range(n):
-        for j in range(i+1,n):
-            sum += abs(points[i][0]-points[j][0])
-            sum += abs(points[i][1]-points[j][1])
-    print(int((2*sum)/(n*(n-1))))
+        x, y = map(int, input().split())
+        x_list.append( x )
+        y_list.append( y )
+
+    sum = process_list(x_list)+process_list(y_list)
+    print(int(sum/(n*(n-1))))
 
 if __name__ == '__main__':
     main()
