@@ -6,21 +6,21 @@ def main():
     for i in range(n):
         sorted_data[data[i]-1] = i+1
 
-    result = [(0, 0)]*n
+    result = list()
 
     for i in range(n):
         di = sorted_data[i]
 
-        l = 1
+        l = 0
         for j in range(i):
-            if sorted_data[j] > di:
+            if sorted_data[j] < di:
                 l += 1
-        r = n
+        r = 0
         for j in range(i+1, n):
-            if di > sorted_data[j]:
-                r -= 1
+            if di < sorted_data[j]:
+                r += 1
 
-        result[di-1] = (l, r)
+        result.append((di-l, di+r))
 
     for r in result:
         print(r[0], r[1])
