@@ -1,22 +1,14 @@
 def main():
     N = int(input())
-    children = list(map(int, input().split()))
+    children = list(map(lambda x: int(x)-1, input().split()))
 
-    votes = [0]*(N+1)
+    votes = [0]*N
     for i in range(N):
-        d = i+1-children[i]
-        if d < 0:
-            d += N
-        votes[1+d] += 1
+        d = i-children[i]
+        votes[d + N if d < 0 else d] += 1
 
-    result = 1
-    result_max = votes[1]
-    for i in range(2, N+1):
-        if result_max < votes[i]:
-            result_max = votes[i]
-            result = i
-
-    print(result)
+    result = votes.index(max(votes))
+    print(result+1)
 
 if __name__ == '__main__':
     main()
