@@ -10,23 +10,12 @@ def main():
     for i in range(N):
         sorted_data.append([0]*N)
     data_pos = 0
-    for i in range(mid+1):
-        for j in range(mid+1):
-            sorted_data[mid-j][mid-i] = data[data_pos]
-            data_pos += 1
-            if j == 0:
-                continue
-            sorted_data[mid+j][mid-i] = data[data_pos]
-            data_pos += 1
-        if i == 0:
-            continue
-        for j in range(mid+1):
-            sorted_data[mid-j][mid+i] = data[data_pos]
-            data_pos += 1
-            if j == 0:
-                continue
-            sorted_data[mid+j][mid+i] = data[data_pos]
-            data_pos += 1
+    for k in range(N):
+        for i in range(N):
+            for j in range(N):
+                if abs(i-mid)+abs(j-mid)==k:
+                    sorted_data[i][j] = data[data_pos]
+                    data_pos += 1
 
     for i in range(N):
         print(' '.join(str(x) for x in sorted_data[i]))
