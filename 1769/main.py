@@ -6,10 +6,10 @@ def main():
     for i in range(len(line)):
         if line[i]=='0':
             continue
-        for j in range(6):
-            if i+j==len(line):
+        for j in range(1,7):
+            if i+j>len(line):
                 break
-            cache[int(line[i:i+j+1])]=True
+            cache[int(line[i:i+j])]=True
 
     for i in range(1, MAX):
         if not cache[i]:
